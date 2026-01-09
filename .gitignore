@@ -1,0 +1,16 @@
+# Django
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Environnement virtuel
+env/
+venv/
+.venv/
+
+# Variables sensibles
+.env
+
+# Fichiers système
+.DS_Store
+Thumbs.db

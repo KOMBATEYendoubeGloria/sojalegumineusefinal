@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ferme Mopkokpo</title>
+
+    <style>
+        :root{
+            --green:#2d5016;
+            --muted:#6c757d;
+            --bg:#f7f8f9;
+            --white:#ffffff;
+        }
+
+        *{box-sizing:border-box}
+        body{font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; margin:0; background:var(--bg); color:#222}
+
+        nav.main-nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--white);box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+        .nav-left{display:flex;align-items:center;gap:1.5rem}
+        .brand{font-weight:700;color:var(--green);text-decoration:none;font-size:1.1rem}
+        .nav-links{display:flex;gap:1rem}
+        .nav-links a{color:#333;text-decoration:none;padding:0.4rem 0.6rem;border-radius:6px}
+        .nav-links a:hover{background:rgba(45,80,22,0.06)}
+
+        .nav-right{display:flex;gap:0.6rem;align-items:center}
+        .btn{display:inline-block;padding:0.55rem 0.9rem;border-radius:6px;text-decoration:none;color:#1a1a1a;border:1px solid #ddd;background:var(--white);font-weight:600}
+        .btn:hover{border-color:var(--green);color:var(--green)}
+        .btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+        .btn.primary:hover{background:#24420f}
+        .btn.outline{background:transparent;border:1px solid #ddd}
+
+        .site-hr{height:1px;background:#eee;border:0;margin:0}
+
+        .container{max-width:1200px;margin:0 auto;padding:2rem}
+
+        @media (max-width:768px){
+            nav.main-nav{flex-direction:column;gap:0.6rem;align-items:flex-start}
+            .nav-right{flex-wrap:wrap}
+        }
+    </style>
+
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+    <nav class="main-nav">
+        <div class="nav-left">
+            <a class="brand" href="/">🌿 Ferme Mopkokpo</a>
+            <div class="nav-links">
+                <a href="/">Accueil</a>
+                <a href="/apropos/">À propos</a>
+                <a href="/produits/">Produits</a>
+                <a href="/contact/">Contact</a>
+
+            </div>
+        </div>
+
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a class="btn" href="/dashboard/">Dashboard</a>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn primary">Déconnexion</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn primary">Déconnexion</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <a class="btn" href="{% url 'login' %}">Connexion</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <hr class="site-hr">
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages" style="margin-bottom:1rem">
+                {% for message in messages %}
+                    <div class="msg {{ message.tags }}" style="padding:0.8rem;border-radius:6px;margin-bottom:0.5rem;background:#f8f9fa;border:1px solid #eee">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

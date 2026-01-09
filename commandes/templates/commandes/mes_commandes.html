@@ -1,0 +1,210 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .mes-commandes-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .mes-commandes-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+    
+    .btn-passer-commande {
+        background: white;
+        color: #2d5016;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-passer-commande:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .commande-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #2d5016;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+    
+    .commande-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .commande-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+    
+    .commande-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d5016;
+    }
+    
+    .statut-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .statut-badge.en-attente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .statut-badge.confirmee {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .statut-badge.en-livraison {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+    
+    .statut-badge.livree {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .statut-badge.annulee {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .commande-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .detail-item {
+        padding: 1rem;
+        background: #f9f9f9;
+        border-radius: 6px;
+    }
+    
+    .detail-label {
+        font-size: 0.85rem;
+        color: #999;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.3rem;
+    }
+    
+    .detail-value {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: #f9f9f9;
+        border-radius: 12px;
+    }
+    
+    .empty-state p {
+        color: #999;
+        font-size: 1.1rem;
+        margin: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mes-commandes-header">
+    <h2>📋 Mes commandes</h2>
+    <a class="btn-passer-commande" href="{% url 'passer_commande' %}">➕ Nouvelle commande</a>
+</div>
+
+{% if commandes %}
+    {% for c in commandes %}
+    <div class="commande-card">
+        <div class="commande-header">
+            <span class="commande-title">
+                 {{ c.legumineuse.nom }}
+                <small style="color: #999; font-size: 0.8rem; display: block; margin-top: 0.3rem;">
+                    ({{ c.legumineuse.type_legumineuse|upper }})
+                </small>
+            </span>
+            <span class="statut-badge {% if c.statut == 'En attente' %}en-attente{% elif c.statut == 'Confirmée' %}confirmee{% elif c.statut == 'En livraison' %}en-livraison{% elif c.statut == 'Livrée' %}livree{% elif c.statut == 'Annulée' %}annulee{% endif %}">
+                {{ c.statut }}
+            </span>
+        </div>
+        
+        <div class="commande-details">
+            <div class="detail-item">
+                <div class="detail-label">📦 Quantité</div>
+                <div class="detail-value">{{ c.quantite }} kg</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">📅 Date commande</div>
+                <div class="detail-value">{{ c.date_commande|date:"d/m/Y H:i" }}</div>
+            </div>
+            
+            {% if c.date_livraison_prevue %}
+            <div class="detail-item">
+                <div class="detail-label">📆 Livraison prévue</div>
+                <div class="detail-value">{{ c.date_livraison_prevue|date:"d/m/Y" }}</div>
+            </div>
+            {% endif %}
+            
+            {% if c.date_livraison_reelle %}
+            <div class="detail-item">
+                <div class="detail-label">✓ Livraison réelle</div>
+                <div class="detail-value">{{ c.date_livraison_reelle|date:"d/m/Y" }}</div>
+            </div>
+            {% endif %}
+            
+            {% if c.prix_total %}
+            <div class="detail-item">
+                <div class="detail-label">💰 Prix total</div>
+                <div class="detail-value">{{ c.prix_total|floatformat:0 }} FCFA</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if c.notes_staff %}
+        <div style="margin-top: 1rem; padding: 1rem; background: #e8f4f8; border-left: 3px solid #0099cc; border-radius: 4px; color: #0099cc;">
+            <strong>📝 Note du staff:</strong> {{ c.notes_staff }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <p style="font-size: 2rem;">🛍️</p>
+        <p>Vous n'avez aucune commande pour le moment.</p>
+        <a class="btn-passer-commande" href="{% url 'passer_commande' %}" style="display: inline-block; margin-top: 1rem;">
+            ➕ Passer votre première commande
+        </a>
+    </div>
+{% endif %}
+
+
+{% endblock %}

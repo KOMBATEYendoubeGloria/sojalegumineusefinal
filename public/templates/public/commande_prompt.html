@@ -1,0 +1,15 @@
+{% extends 'public/base.html' %}
+
+{% block content %}
+<h2>Pour commander, veuillez vous connecter ou créer un compte client</h2>
+
+<p>Ce flux est réservé aux <strong>comptes clients</strong>. Si vous êtes membre du personnel ou administrateur, utilisez votre espace Dashboard.</p>
+
+<p>Vous devez avoir un compte client pour passer des commandes et consulter votre historique.</p>
+
+<div style="display:flex;gap:1rem;margin-top:1rem">
+    <a class="btn" href="{% url 'login' %}?next={{ next }}">Se connecter</a>
+    <a class="btn primary" href="{% url 'inscription_client' %}?next={{ next }}">Créer un compte client</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - Ferme Mopkokpo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 4rem;
+            background: rgba(0, 100, 0, 0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo::before {
+            content: "🌿";
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: color 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            color: #90EE90;
+        }
+
+        .btn-primary2 {
+            padding: 0.6rem 1.5rem !important;
+            background: #90EE90 !important;
+            color: #006400 !important;
+            border-radius: 5px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-primary2:hover {
+            background: #7CFC00 !important;
+            color: #004d00 !important;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            line-height: 1.8;
+        }
+
+        .products-section {
+            padding: 2rem 4rem 5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: #90EE90;
+        }
+
+        .product-image {
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #006400;
+            color: #fff;
+            padding: 0.35rem 0.8rem;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-info h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .product-info p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f1f1;
+            padding-top: 0.8rem;
+            margin-top: 0.6rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #006400;
+        }
+
+        .btn-commander {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: #90EE90;
+            color: #006400;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .btn-commander:hover {
+            background: #7CFC00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(144, 238, 144, 0.4);
+        }
+
+        .commander-section {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 2rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+                font-size: 0.8rem;
+            }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .products-section {
+                padding: 2rem 1.5rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Ferme Mopkokpo</div>
+        <ul class="nav-links">
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/apropos/">À Propos</a></li>
+            <li><a href="/produits/">Produits</a></li>
+            <li><a href="/contact/">Contact</a></li>
+            <li><a href="/login/">Commander</a></li>
+            <li><a href="/login/" class="btn-primary2">connexion</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>Nos Produits</h1>
+        <p>Découvrez notre sélection de légumineuses biologiques cultivées avec passion dans notre ferme</p>
+    </div>
+
+    <section class="products-section">
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://i-re.unimedias.fr/2024/04/29/haricotistock-662fd49da92fc.jpg?auto=format%2Ccompress&crop=faces&cs=tinysrgb&fit=max&ixlib=php-4.1.0&w=1050" alt="Haricots">
+                    <span class="product-badge">Légumineuse</span>
+                </div>
+                <div class="product-info">
+                    <h3>Haricot</h3>
+                    <p>Haricots biologiques cultivés localement, riches en saveur.</p>
+                    <div class="product-footer">
+                        <span class="product-price">2000 FCFA/kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://www.planetesante.ch/var/ezdemo_site/storage/images/media/images/00-rubriques/nutrition-alimentation/allergies_arachide/33161-1-eng-GB/allergies_arachide_gallerylarge.jpg" alt="Arachides">
+                    <span class="product-badge">Légumineuse</span>
+                </div>
+                <div class="product-info">
+                    <h3>Arachide</h3>
+                    <p>Arachides croquantes et fraîches.</p>
+                    <div class="product-footer">
+                        <span class="product-price">2500 FCFA/kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://www.republicoftogo.com/var/site/storage/images/toutes-les-rubriques/eco-finance/le-soja-fait-l-affaire-des-agriculteurs/2761621-1-fre-FR/le-soja-fait-l-affaire-des-agriculteurs_i1920.jpg" alt="Sodja">
+                    <span class="product-badge">Légumineuse</span>
+                </div>
+                <div class="product-info">
+                    <h3>Sodja</h3>
+                    <p>Sodja, produit local traditionnel.</p>
+                    <div class="product-footer">
+                        <span class="product-price">600 FCFA/kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://investactu.com/wp-content/uploads/2022/03/Le-nie%CC%81be%CC%81.jpg" alt="Niébé">
+                    <span class="product-badge">Légumineuse</span>
+                </div>
+                <div class="product-info">
+                    <h3>Niébé</h3>
+                    <p>Niébé cultivés sans pesticides.</p>
+                    <div class="product-footer">
+                        <span class="product-price">1500 FCFA/kg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="commander-section">
+            <a href="/login/" class="btn-commander">Commander maintenant</a>
+        </div>
+    </section>
+</body>
+</html>

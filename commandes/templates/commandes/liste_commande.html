@@ -1,0 +1,219 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .commandes-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .commandes-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    
+    .filter-section select {
+        padding: 0.6rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    .commandes-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .commandes-table thead tr {
+        background: #f5f5f5;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .commandes-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #2d5016;
+    }
+    
+    .commandes-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .commandes-table tbody tr:hover {
+        background: #f9f9f9;
+    }
+    
+    .statut-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .statut-badge.en-attente {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .statut-badge.confirmee {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .statut-badge.en-livraison {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+    
+    .statut-badge.livree {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .statut-badge.annulee {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .action-btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #2d5016;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .action-btn:hover {
+        background: #1f3b0f;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 6px rgba(45, 80, 22, 0.2);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="commandes-header">
+    <h2>🚚 Gestion des commandes & livraisons</h2>
+    <p>Suivi de toutes les commandes clients</p>
+</div>
+
+<div class="filter-section">
+    <form method="get" style="display: flex; gap: 1rem; align-items: center;">
+        <label for="statut" style="font-weight: 600; margin: 0;">Filtrer par statut:</label>
+        <select name="statut" id="statut" onchange="this.form.submit()">
+            <option value="">-- Tous les statuts --</option>
+            {% for code, label in statuts.items %}
+            <option value="{{ code }}" {% if current_statut == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+{% if commandes %}
+<div class="table-container">
+    <table class="commandes-table">
+        <thead>
+            <tr>
+                <th>👤 Client</th>
+                <th>🥬 Légumineuse</th>
+                <th>📦 Quantité</th>
+                <th>💰 Prix total</th>
+                <th>📅 Date commande</th>
+                <th>📆 Livraison prévue</th>
+                <th>✓ Statut</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in commandes %}
+            <tr>
+                <td>
+                    <strong>{{ c.client_nom|default:c.client.get_full_name|default:c.client.username }}</strong>
+                    <br>
+                    <small style="color: #999;">
+                        {% if c.client_telephone %}{{ c.client_telephone }}{% else %}<span style="color:#999;">-</span>{% endif %}
+                    </small>
+                    <br>
+                    <small style="color: #999;">
+                        {% if c.client_adresse %}{{ c.client_adresse }}{% else %}<span style="color:#999;">-</span>{% endif %}
+                    </small>
+                    <br>
+                    <small style="color: #999;">{{ c.client.email }}</small>
+                </td>
+                <td>{{ c.legumineuse.nom }}</td>
+                <td><strong>{{ c.quantite }} kg</strong></td>
+                <td>
+                    {% if c.prix_total %}
+                        <strong>{{ c.prix_total|floatformat:0 }}</strong> FCFA
+                    {% else %}
+                        <span style="color: #999;">-</span>
+                    {% endif %}
+                </td>
+                <td>{{ c.date_commande|date:"d/m/Y H:i" }}</td>
+                <td>
+                    {% if c.date_livraison_prevue %}
+                        {{ c.date_livraison_prevue|date:"d/m/Y" }}
+                        {% if c.est_en_retard %}
+                        <span style="color: #d32f2f; font-weight: 600;">⚠️ RETARD</span>
+                        {% endif %}
+                    {% else %}
+                        <span style="color: #999;">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="statut-badge {% if c.statut == 'En attente' %}en-attente{% elif c.statut == 'Confirmée' %}confirmee{% elif c.statut == 'En livraison' %}en-livraison{% elif c.statut == 'Livrée' %}livree{% elif c.statut == 'Annulée' %}annulee{% endif %}">
+                        {{ c.statut }}
+                    </span>
+                </td>
+                <td>
+                    <a class="action-btn" href="{% url 'changer_statut' c.id %}">
+                        ⚙️ Gérer
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p style="font-size: 2rem;">📋</p>
+    <p style="color: #999; font-size: 1.1rem;">Aucune commande trouvée.</p>
+</div>
+{% endif %}
+
+
+{% endblock %}

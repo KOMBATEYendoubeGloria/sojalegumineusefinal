@@ -1,0 +1,194 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .passer-commande-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .passer-commande-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        max-width: 600px;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2d5016;
+        box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+    }
+    
+    .info-box {
+        background: #f0f7f0;
+        border-left: 4px solid #2d5016;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        color: #2d5016;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn.primary {
+        background: #2d5016;
+        color: white;
+    }
+    
+    .btn.primary:hover {
+        background: #1f3b0f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+    }
+    
+    .btn.secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+    
+    .btn.secondary:hover {
+        background: #e0e0e0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="passer-commande-header">
+    <h2>🛒 Passer une commande</h2>
+    <p>Sélectionnez la légumineuse et la quantité désirée</p>
+</div>
+
+<div class="form-card">
+    <div class="info-box">
+        Remplissez le formulaire ci-dessous pour passer votre commande. Une confirmation vous sera envoyée par email.
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="nom">👤 Nom complet</label>
+            <input type="text" name="nom" id="nom" value="{{ default_nom }}" placeholder="Nom complet" required>
+        </div>
+
+        <div class="form-group">
+            <label for="telephone">📞 Téléphone</label>
+            <input type="text" name="telephone" id="telephone" value="{{ default_telephone }}" placeholder="Ex: +229 97 00 00 00" required>
+        </div>
+
+        <div class="form-group">
+            <label for="adresse">🏠 Adresse de livraison</label>
+            <textarea name="adresse" id="adresse" placeholder="Adresse complète" required>{{ default_adresse }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="legumineuse">🫘🫛 Légumineuse</label>
+            <select name="legumineuse" id="legumineuse" required>
+                <option value="">-- Sélectionnez une légumineuse --</option>
+                {% for l in legumineuses %}
+                <option value="{{ l.id }}" data-price="{{ l.prix_unitaire|default:'' }}">{{ l.nom }} ({{ l.type_legumineuse }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quantite">📦 Quantité (en kg)</label>
+            <input type="number" step="0.01" min="0.01" name="quantite" id="quantite" placeholder="Ex: 50.5" required>
+        </div>
+
+        <div class="form-group">
+            <label for="prix_unitaire">💰 Prix unitaire (FCFA/kg)</label>
+            <input type="text" name="prix_unitaire" id="prix_unitaire" readonly style="background:#f5f5f5;" placeholder="Sélectionnez une légumineuse pour voir le prix">
+        </div>
+
+        <div class="form-group">
+            <label for="prix_total">💵 Prix total</label>
+            <input type="text" id="prix_total" readonly style="background:#f5f5f5; font-weight:700;" placeholder="0 FCFA">
+        </div>
+
+        <div class="button-group">
+            <button class="btn primary" type="submit">✓ Passer la commande</button>
+            <a class="btn secondary" href="{% url 'mes_commandes' %}">✕ Annuler</a>
+        </div>
+    </form>
+
+    <script>
+        (function(){
+            const select = document.getElementById('legumineuse');
+            const prixInput = document.getElementById('prix_unitaire');
+            const quantiteInput = document.getElementById('quantite');
+            const prixTotal = document.getElementById('prix_total');
+
+            function updatePrice(){
+                const option = select.options[select.selectedIndex];
+                const price = option ? option.dataset.price : '';
+                prixInput.value = price ? parseFloat(price).toFixed(0) : '';
+                updateTotal();
+            }
+            function updateTotal(){
+                const q = parseFloat(quantiteInput.value) || 0;
+                const p = parseFloat(prixInput.value) || 0;
+                const total = q * p;
+                prixTotal.value = total ? total.toFixed(0) + ' FCFA' : '0 FCFA';
+            }
+
+            select.addEventListener('change', updatePrice);
+            quantiteInput.addEventListener('input', updateTotal);
+            // initial
+            updatePrice();
+        })();
+    </script>
+</div>
+<div style="margin-top: 2rem;">
+    <a class="btn" href="{% url 'mes_commandes' %}" style="display: inline-block; padding: 0.7rem 1.5rem; background: #f0f0f0; color: #333; border-radius: 6px; text-decoration: none; font-weight: 600;">⬅ Retour à mes commandes</a>
+</div>
+
+{% endblock %}

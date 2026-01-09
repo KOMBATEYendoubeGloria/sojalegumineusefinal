@@ -1,0 +1,275 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .header-section {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .header-section h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        max-width: 700px;
+    }
+    
+    .commande-info {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border-left: 4px solid #2d5016;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .info-item {
+        padding: 1rem;
+        background: white;
+        border-radius: 6px;
+    }
+    
+    .info-label {
+        font-size: 0.8rem;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+    
+    .info-value {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #2d5016;
+        box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+    }
+    
+    .statut-options {
+        display: grid;
+        gap: 0.8rem;
+    }
+    
+    .statut-option {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .statut-option:hover {
+        border-color: #2d5016;
+        background: #f9f9f9;
+    }
+    
+    .statut-option input[type="radio"]:checked + .statut-label {
+        font-weight: 700;
+    }
+    
+    .statut-option input[type="radio"]:checked {
+        accent-color: #2d5016;
+    }
+    
+    .statut-label {
+        margin-left: 0.5rem;
+        cursor: pointer;
+        flex: 1;
+    }
+    
+    .statut-badge {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: auto;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e0e0e0;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn.primary {
+        background: #2d5016;
+        color: white;
+    }
+    
+    .btn.primary:hover {
+        background: #1f3b0f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+    }
+    
+    .btn.secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+    
+    .btn.secondary:hover {
+        background: #e0e0e0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header-section">
+    <h2>⚙️ Gérer la commande</h2>
+    <p>Mettre à jour le statut et les informations de livraison</p>
+</div>
+
+<div class="form-card">
+    <div class="commande-info">
+        <h3 style="margin-top: 0; color: #2d5016;">📋 Détails de la commande</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Client</div>
+                <div class="info-value">{{ commande.client_nom|default:commande.client.get_full_name|default:commande.client.username }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Téléphone</div>
+                <div class="info-value">{% if commande.client_telephone %}{{ commande.client_telephone }}{% else %}<span style="color:#999;">-</span>{% endif %}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Adresse</div>
+                <div class="info-value">{% if commande.client_adresse %}{{ commande.client_adresse }}{% else %}<span style="color:#999;">-</span>{% endif %}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Légumineuse</div>
+                <div class="info-value">{{ commande.legumineuse.nom }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Quantité</div>
+                <div class="info-value">{{ commande.quantite }} kg</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Date commande</div>
+                <div class="info-value">{{ commande.date_commande|date:"d/m/Y" }}</div>
+            </div>
+            {% if commande.prix_total %}
+            <div class="info-item">
+                <div class="info-label">Prix total</div>
+                <div class="info-value">{{ commande.prix_total|floatformat:0 }} FCFA</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>✓ Nouveau statut</label>
+            <div class="statut-options">
+                {% for code, label in statuts %}
+                <label class="statut-option">
+                    <input type="radio" name="statut" value="{{ code }}" {% if commande.statut == code %}checked{% endif %}>
+                    <span class="statut-label">
+                        {{ label }}
+                        <span class="statut-badge" style="background: {% if code == 'En attente' %}#fff3cd; color: #856404;{% elif code == 'Confirmée' %}#d1ecf1; color: #0c5460;{% elif code == 'En livraison' %}#e2e3e5; color: #383d41;{% elif code == 'Livrée' %}#d4edda; color: #155724;{% else %}#f8d7da; color: #721c24;{% endif %}">
+                            {{ code }}
+                        </span>
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="date_livraison_prevue">📆 Date de livraison prévue</label>
+            <input type="date" name="date_livraison_prevue" id="date_livraison_prevue" value="{% if commande.date_livraison_prevue %}{{ commande.date_livraison_prevue|date:'Y-m-d' }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label for="notes_staff">📝 Notes pour le staff</label>
+            <textarea name="notes_staff" id="notes_staff" placeholder="Ajouter des notes internes...">{{ commande.notes_staff }}</textarea>
+            <small style="color: #999; display: block; margin-top: 0.3rem;">
+                Ces notes seront visibles uniquement par le staff, pas par le client.
+            </small>
+        </div>
+
+        {% if commande.statut == 'Livrée' and commande.vente %}
+        <div style="margin-bottom: 1rem; padding: 1rem; background: #e8f7e8; border-left: 3px solid #2d5016; border-radius: 4px; color: #2d5016;">
+            <strong>✅ Vente enregistrée :</strong>
+            <div style="margin-top: 0.5rem;">
+                <div style="font-weight:600;">Revenu: <span>{{ commande.vente.revenu|floatformat:0 }} FCFA</span></div>
+                <div>Téléphone: <span>{{ commande.vente.client_telephone|default:'-' }}</span></div>
+                <div>Adresse: <span>{{ commande.vente.client_adresse|default:'-' }}</span></div>
+                <div style="margin-top:0.5rem;"><a href="{% url 'ventes' %}" class="btn secondary">Voir toutes les ventes</a></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="button-group">
+            <button class="btn primary" type="submit">✓ Enregistrer les modifications</button>
+            <a class="btn secondary" href="{% url 'commandes' %}">✕ Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

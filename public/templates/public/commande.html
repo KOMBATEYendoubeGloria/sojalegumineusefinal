@@ -1,0 +1,21 @@
+{% extends 'public/base.html' %}
+
+{% block content %}
+<h2>Passer une commande</h2>
+
+<form method="post" style="max-width:480px">
+    {% csrf_token %}
+
+    <label>Produit</label><br>
+    <input type="text" name="produit" required><br><br>
+
+    <label>Quantité</label><br>
+    <input type="number" name="quantite" min="1" required><br><br>
+
+    <div style="display:flex;gap:1rem">
+        <button class="btn primary" type="submit">Commander</button>
+        <a class="btn" href="/">Annuler</a>
+    </div>
+</form>
+
+{% endblock %}

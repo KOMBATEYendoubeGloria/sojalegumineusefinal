@@ -1,0 +1,90 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .sections-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sections-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 2px solid #eee;
+    }
+
+    .section-card h3 {
+        color: #2d5016;
+        margin-bottom: 1rem;
+    }
+
+    .section-info {
+        background: #f9f9f9;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #2d5016;
+    }
+
+    .section-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+    }
+
+    .section-info-label {
+        font-weight: 600;
+        color: #2d5016;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+        background: #f9f9f9;
+        border-radius: 8px;
+        border: 1px dashed #ddd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sections-header">
+    <h2>📍 Gestion des sections</h2>
+    <a href="/dashboard/" class="btn">⬅ Dashboard</a>
+</div>
+
+{% if sections %}
+<div class="sections-grid">
+    {% for section in sections %}
+    <div class="section-card">
+        <h3>{{ section.nom }}</h3>
+
+        <div class="section-info">
+            <div class="section-info-item">
+                <span class="section-info-label">📏 Superficie :</span>
+                <span><strong>{{ section.superficie }} m²</strong></span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>ℹ️ Aucune section enregistrée.</p>
+</div>
+{% endif %}
+{% endblock %}

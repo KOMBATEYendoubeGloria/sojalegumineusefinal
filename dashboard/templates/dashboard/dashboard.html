@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+    }
+    
+    .dashboard-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+    }
+    
+    .dashboard-header p {
+        margin: 0;
+        font-size: 1.1rem;
+        opacity: 0.95;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #eee;
+    }
+    
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .card h3 {
+        margin: 0.5rem 0;
+        color: #2d5016;
+        font-size: 1rem;
+    }
+    
+    .card p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .card-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .card-link:hover {
+        color: #2d5016;
+    }
+    
+    .card-link:hover h3 {
+        color: #3d6b1f;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        color: #2d5016;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+    }
+    
+    .logout-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #eee;
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .logout-form button {
+        padding: 0.6rem 1.2rem !important;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 2px solid #dc3545 !important;
+        background: transparent !important;
+        color: #dc3545;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .logout-form button:hover {
+        background: #dc3545 !important;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1> Tableau de bord de la Ferme Mopkokpo</h1>
+    <p>Bienvenue <strong>{{ user.username }}</strong>{% if user.is_staff %}{% else %}Client{% endif %}</p>
+</div>
+
+<div class="section-title">📋 Gestion de la ferme</div>
+<div class="dashboard-grid">
+    <div class="card">
+        <a href="/employes/" class="card-link">
+            <span class="card-icon">👥</span>
+            <h3>Gestion des employés</h3>
+            <p>Gérer les employés et leur tâches</p>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a href="/legumineuses/" class="card-link">
+            <span class="card-icon">🫘</span>
+            <h3>Gestion des légumineuses</h3>
+            <p>Ajouter et gérer les cultures</p>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a href="/recoltes/" class="card-link">
+            <span class="card-icon">🌾</span>
+            <h3>Suivi des récoltes</h3>
+            <p>Enregistrer et suivre les récoltes</p>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a href="/stock/" class="card-link">
+            <span class="card-icon">📦</span>
+            <h3>Stock</h3>
+            <p>Consulter le stock disponible</p>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a href="/ventes/" class="card-link">
+            <span class="card-icon">💰</span>
+            <h3>Ventes et revenus</h3>
+            <p>Visualiser les ventes et revenus</p>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a href="/depenses/" class="card-link">
+            <span class="card-icon">💸</span>
+            <h3>Achats et dépenses</h3>
+            <p>Gérer les achats et dépenses</p>
+        </a>
+    </div>
+</div>
+
+<div class="section-title">📊 Rapports et commandes</div>
+<div class="dashboard-grid">
+    {% if user.is_staff %}
+    <div class="card">
+        <a href="{% url 'commandes' %}" class="card-link">
+            <span class="card-icon">📋</span>
+            <h3>Gestion des commandes</h3>
+            <p>Gérer tous les statuts de commandes</p>
+        </a>
+    </div>
+    {% endif %}
+    
+    <div class="card">
+        <a href="{% url 'dashboard_commandes' %}" class="card-link">
+            <span class="card-icon">🚚</span>
+            <h3>Commandes & livraisons</h3>
+            <p>Voir les commandes par client</p>
+        </a>
+    </div>
+    
+    <div class="card">
+        <a href="{% url 'statistiques' %}" class="card-link">
+            <span class="card-icon">📈</span>
+            <h3>Statistiques</h3>
+            <p>Voir les graphiques et statistiques</p>
+        </a>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+</body>
+</html>

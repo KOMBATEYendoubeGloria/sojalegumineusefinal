@@ -1,0 +1,145 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<style>
+    .commandes-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .commandes-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+    
+    .client-card {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #eee;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+    
+    .client-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .client-card h3 {
+        margin: 0 0 0.5rem 0;
+        color: #2d5016;
+        font-size: 1.2rem;
+    }
+    
+    .client-info {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .commandes-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .commandes-table th {
+        background: #f5f5f5;
+        color: #2d5016;
+        padding: 0.8rem;
+        text-align: left;
+        font-weight: 600;
+        border: 1px solid #ddd;
+    }
+    
+    .commandes-table td {
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+    }
+    
+    .commandes-table tr:hover {
+        background: #fafafa;
+    }
+    
+    .statut {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .statut.pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .statut.confirmed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .statut.completed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="commandes-header">
+    <h2>🚚 Commandes & Livraisons</h2>
+    <p>Suivi des commandes par client</p>
+</div>
+
+{% for entry in clients_commandes %}
+    <div class="client-card">
+        <h3>👤 {{ entry.client.username }}</h3>
+        <div class="client-info">
+            📧 <strong>Email:</strong> {{ entry.client.email }} 
+            | 📅 <strong>Inscrit:</strong> {{ entry.client.date_joined|date:"d/m/Y" }}
+        </div>
+        
+        <table class="commandes-table">
+            <thead>
+                <tr>
+                    <th>🥬 Légumineuse</th>
+                    <th>📦 Quantité (kg)</th>
+                    <th>📅 Date commande</th>
+                    <th>✓ Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in entry.commandes %}
+                <tr>
+                    <td>{{ c.legumineuse.nom }}</td>
+                    <td><strong>{{ c.quantite }} kg</strong></td>
+                    <td>{{ c.date_commande|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <span class="statut {% if c.statut == 'En attente' %}pending{% elif c.statut == 'Confirmée' %}confirmed{% elif c.statut == 'Livrée' %}completed{% endif %}">
+                            {{ c.statut }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% empty %}
+    <div class="empty-state">
+        <p style="font-size: 1.2rem; margin: 1rem 0;">ℹ️ Aucune commande trouvée.</p>
+    </div>
+{% endfor %}
+
+<a class="btn" href="{% url 'dashboard' %}" style="margin-top: 2rem;">⬅ Retour au dashboard</a>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'public/base.html' %}
+
+{% block content %}
+<h2>Mon compte</h2>
+
+<p><strong>Nom d'utilisateur :</strong> {{ request.user.username }}</p>
+
+<h3>Mes commandes</h3>
+<table border="1">
+    <tr>
+        <th>Légumineuse</th>
+        <th>Quantité (kg)</th>
+        <th>Date commande</th>
+        <th>Statut</th>
+    </tr>
+    {% for c in commandes %}
+    <tr>
+        <td>{{ c.legumineuse.nom }}</td>
+        <td>{{ c.quantite }}</td>
+        <td>{{ c.date_commande }}</td>
+        <td>{{ c.statut }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Aucune commande pour le moment.</td></tr>
+    {% endfor %}
+</table>
+
+<a class="btn primary" href="{% url 'passer_commande' %}">Passer une commande</a>
+{% endblock %}
