@@ -1,0 +1,47 @@
+{% extends 'public/base.html' %}
+{% block content %}
+<div class="content-wrapper"
+    style="margin-top: 100px; padding: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="color: #2d5016; border-bottom: 2px solid #2d5016; padding-bottom: 10px; margin-bottom: 20px;">
+        Ajouter une Section</h2>
+    <form method="post">
+        {% csrf_token %}
+        <style>
+            label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            input,
+            select {
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 20px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+
+            button {
+                background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 600;
+                width: 100%;
+            }
+
+            button:hover {
+                opacity: 0.9;
+            }
+        </style>
+        {{ form.as_p }}
+        <button type="submit">Enregistrer</button>
+    </form>
+</div>
+{% endblock %}

@@ -2,7 +2,7 @@
 
 {% block head_extra %}
 <style>
-    .sections-header {
+    .header-section {
         background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
         color: white;
         padding: 2rem;
@@ -13,78 +13,203 @@
         align-items: center;
     }
 
-    .sections-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 1.5rem;
+    .header-section h2 {
+        margin: 0;
+        font-size: 1.8rem;
     }
 
-    .section-card {
+    .btn-add {
+        background: white;
+        color: #2d5016;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
         background: white;
         border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        border: 2px solid #eee;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
     }
 
-    .section-card h3 {
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead tr {
+        background: #f8f9fa;
+        border-bottom: 2px solid #eee;
+    }
+
+    .data-table th {
+        padding: 1.2rem;
+        text-align: left;
         color: #2d5016;
-        margin-bottom: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
     }
 
-    .section-info {
-        background: #f9f9f9;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #2d5016;
+    .data-table td {
+        padding: 1.2rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
     }
 
-    .section-info-item {
+    .data-table tbody tr:hover {
+        background: #f9fbf7;
+    }
+
+    .actions-cell {
         display: flex;
-        justify-content: space-between;
-        margin: 0.5rem 0;
+        gap: 0.8rem;
     }
 
-    .section-info-label {
+    .action-btn {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.8rem;
         font-weight: 600;
+        padding: 0.4rem 0.7rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-info {
+        color: #3498db;
+        background: #ebf5fb;
+    }
+
+    .btn-info:hover {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-edit {
+        color: #f39c12;
+        background: #fff9eb;
+    }
+
+    .btn-edit:hover {
+        background: #f39c12;
+        color: white;
+    }
+
+    .btn-delete {
+        color: #e74c3c;
+        background: #fdf2f0;
+    }
+
+    .btn-delete:hover {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-primary {
+        background: #e9f5e9;
         color: #2d5016;
+    }
+
+    .badge-secondary {
+        background: #f0f0f0;
+        color: #666;
     }
 
     .empty-state {
         text-align: center;
-        padding: 3rem;
+        padding: 4rem;
         color: #999;
-        background: #f9f9f9;
-        border-radius: 8px;
-        border: 1px dashed #ddd;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="sections-header">
-    <h2>📍 Gestion des sections</h2>
-    <a href="/dashboard/" class="btn">⬅ Dashboard</a>
-</div>
-
-{% if sections %}
-<div class="sections-grid">
-    {% for section in sections %}
-    <div class="section-card">
-        <h3>{{ section.nom }}</h3>
-
-        <div class="section-info">
-            <div class="section-info-item">
-                <span class="section-info-label">📏 Superficie :</span>
-                <span><strong>{{ section.superficie }} m²</strong></span>
-            </div>
-        </div>
+<div class="header-section">
+    <div>
+        <h2>🗺️ Liste des Sections</h2>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Cartographie et organisation du terrain</p>
     </div>
-    {% endfor %}
+    <a href="{% url 'ajouter_section' %}" class="btn-add">
+        <span class="material-icons">add_location</span>
+        Ajouter une section
+    </a>
 </div>
-{% else %}
-<div class="empty-state">
-    <p>ℹ️ Aucune section enregistrée.</p>
+
+<div class="table-container">
+    {% if sections %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>📍 Nom</th>
+                <th>📏 Superficie</th>
+                <th>👤 Responsable</th>
+                <th>🥬 Culture(s)</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for section in sections %}
+            <tr>
+                <td style="font-weight: 700; color: #2d5016;">{{ section.nom }}</td>
+                <td><strong>{{ section.superficie }}</strong> <small>m²</small></td>
+                <td>{{ section.employe.nom|default:"Non assigné" }}</td>
+                <td>
+                    {% for l in section.legumineuses_cultures.all %}
+                    <span class="badge badge-primary">{{ l.nom }}</span>
+                    {% empty %}
+                    <span class="badge badge-secondary">Aucune culture</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <div class="actions-cell">
+                        <a href="{% url 'details_section' section.id %}" class="action-btn btn-info">
+                            <span class="material-icons" style="font-size: 16px;">info</span>
+                            Détails
+                        </a>
+                        <a href="{% url 'modifier_section' section.id %}" class="action-btn btn-edit">
+                            <span class="material-icons" style="font-size: 16px;">edit</span>
+                            Modifier
+                        </a>
+                        <a href="{% url 'supprimer_section' section.id %}" class="action-btn btn-delete">
+                            <span class="material-icons" style="font-size: 16px;">delete</span>
+                            Supprimer
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">map</span>
+        <p style="font-size: 1.2rem;">Aucune section créée pour le moment.</p>
+        <a href="{% url 'ajouter_section' %}"
+            style="color: #2d5016; font-weight: 600; text-decoration: underline;">Créer la première section</a>
+    </div>
+    {% endif %}
 </div>
-{% endif %}
 {% endblock %}

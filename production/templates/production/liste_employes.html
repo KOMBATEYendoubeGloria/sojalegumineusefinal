@@ -1,172 +1,192 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        /* Style pour la page liste producteurs */
-        body {
-            background: #f5f6fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+{% extends 'public/base.html' %}
 
-        /* Barre de navigation statique */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
+{% block head_extra %}
+<style>
+    .header-section {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            background: transparent;
-            box-shadow: none;
-        }
+    .header-section h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
 
-        nav a:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: none;
-        }
+    .btn-add {
+        background: white;
+        color: #2d5016;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-        /* Contenu principal avec marge pour la nav */
-        .content-wrapper {
-            margin-top: 80px;
-            padding: 2rem;
-        }
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
-        h2 {
-            color: #2d5016;
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 3px solid #3d6b1f;
-        }
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
 
-        table {
-            width: 100%;
-            background: #ffffff;
-            border-collapse: collapse;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            border: none !important;
-        }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        table tr {
-            border-bottom: 1px solid #e1e8ed;
-            transition: background 0.2s ease;
-        }
+    .data-table thead tr {
+        background: #f8f9fa;
+        border-bottom: 2px solid #eee;
+    }
 
-        table tr:last-child {
-            border-bottom: none;
-        }
+    .data-table th {
+        padding: 1.2rem;
+        text-align: left;
+        color: #2d5016;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
 
-        table tr:hover {
-            background: #f8f9fa;
-        }
+    .data-table td {
+        padding: 1.2rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
 
-        table th {
-            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
-            color: white;
-            padding: 1.2rem 1.5rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none !important;
-        }
+    .data-table tbody tr:hover {
+        background: #f9fbf7;
+    }
 
-        table td {
-            padding: 1rem 1.5rem;
-            color: #2c3e50;
-            font-size: 0.95rem;
-            border: none !important;
-        }
+    .actions-cell {
+        display: flex;
+        gap: 1rem;
+    }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                padding: 1rem;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+    .action-btn {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
 
-            .content-wrapper {
-                margin-top: 120px;
-                padding: 1rem;
-            }
+    .btn-edit {
+        color: #f39c12;
+        background: #fff9eb;
+    }
 
-            table {
-                font-size: 0.9rem;
-            }
+    .btn-edit:hover {
+        background: #f39c12;
+        color: white;
+    }
 
-            table th,
-            table td {
-                padding: 0.8rem 1rem;
-            }
+    .btn-delete {
+        color: #e74c3c;
+        background: #fdf2f0;
+    }
 
-            h2 {
-                font-size: 1.5rem;
-            }
-        }
+    .btn-delete:hover {
+        background: #e74c3c;
+        color: white;
+    }
 
-        @media (max-width: 480px) {
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-        }
-    </style>
-</head>
-<body>
-    {% extends 'public/base.html' %}
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: #999;
+    }
 
-{% block content %}
->
-
-<div class="content-wrapper">
-    <h2>Liste des employés</h2>
-
-    <table border="1">
-        <tr>
-            <th>Nom</th>
-            <th>Téléphone</th>
-            <th>Date d'ajout</th>
-        </tr>
-
-        {% for p in employes %}
-        <tr>
-            <td>{{ p.nom }}</td>
-            <td>{{ p.telephone }}</td>
-            <td>{{ p.date_ajout }}</td>
-            
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+    .section-badge {
+        background: #e9f5e9;
+        color: #2d5016;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+</style>
 {% endblock %}
 
-</body>
-</html>
+{% block content %}
+<div class="header-section">
+    <div>
+        <h2>👥 Liste des Employés</h2>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Gestion du personnel de la ferme</p>
+    </div>
+    <a href="{% url 'ajouter_employe' %}" class="btn-add">
+        <span class="material-icons">person_add</span>
+        Ajouter un employé
+    </a>
+</div>
+
+<div class="table-container">
+    {% if employes %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>👤 Nom</th>
+                <th>📞 Téléphone</th>
+                <th>📍 Section</th>
+                <th>📅 Date d'ajout</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in employes %}
+            <tr>
+                <td style="font-weight: 600; color: #333;">{{ p.nom }}</td>
+                <td>{{ p.telephone }}</td>
+                <td>
+                    {% if p.section %}
+                    <span class="section-badge">{{ p.section.nom }}</span>
+                    {% else %}
+                    <span style="color: #bbb; font-style: italic;">Non assigné</span>
+                    {% endif %}
+                </td>
+                <td style="color: #666;">{{ p.date_ajout|date:"d/m/Y" }}</td>
+                <td>
+                    <div class="actions-cell">
+                        <a href="{% url 'modifier_employe' p.id %}" class="action-btn btn-edit">
+                            <span class="material-icons" style="font-size: 18px;">edit</span>
+                            Modifier
+                        </a>
+                        <a href="{% url 'supprimer_employe' p.id %}" class="action-btn btn-delete">
+                            <span class="material-icons" style="font-size: 18px;">delete</span>
+                            Supprimer
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">people_outline</span>
+        <p style="font-size: 1.2rem;">Aucun employé enregistré.</p>
+        <a href="{% url 'ajouter_employe' %}"
+            style="color: #2d5016; font-weight: 600; text-decoration: underline;">Ajouter le premier employé</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

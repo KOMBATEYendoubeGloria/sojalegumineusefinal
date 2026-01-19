@@ -9,12 +9,12 @@
         border-radius: 12px;
         margin-bottom: 2rem;
     }
-    
+
     .passer-commande-header h2 {
         margin: 0;
         font-size: 1.8rem;
     }
-    
+
     .form-card {
         background: white;
         border-radius: 12px;
@@ -22,18 +22,18 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         max-width: 600px;
     }
-    
+
     .form-group {
         margin-bottom: 1.5rem;
     }
-    
+
     .form-group label {
         display: block;
         font-weight: 600;
         margin-bottom: 0.5rem;
         color: #333;
     }
-    
+
     .form-group input,
     .form-group select {
         width: 100%;
@@ -44,14 +44,14 @@
         font-family: inherit;
         box-sizing: border-box;
     }
-    
+
     .form-group input:focus,
     .form-group select:focus {
         outline: none;
         border-color: #2d5016;
         box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
     }
-    
+
     .info-box {
         background: #f0f7f0;
         border-left: 4px solid #2d5016;
@@ -60,13 +60,13 @@
         margin-bottom: 1.5rem;
         color: #2d5016;
     }
-    
+
     .button-group {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
     }
-    
+
     .btn {
         flex: 1;
         padding: 0.8rem 1.5rem;
@@ -77,23 +77,23 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .btn.primary {
         background: #2d5016;
         color: white;
     }
-    
+
     .btn.primary:hover {
         background: #1f3b0f;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
     }
-    
+
     .btn.secondary {
         background: #f0f0f0;
         color: #333;
     }
-    
+
     .btn.secondary:hover {
         background: #e0e0e0;
     }
@@ -110,10 +110,10 @@
     <div class="info-box">
         Remplissez le formulaire ci-dessous pour passer votre commande. Une confirmation vous sera envoyée par email.
     </div>
-    
+
     <form method="post">
         {% csrf_token %}
-        
+
         <div class="form-group">
             <label for="nom">👤 Nom complet</label>
             <input type="text" name="nom" id="nom" value="{{ default_nom }}" placeholder="Nom complet" required>
@@ -121,12 +121,14 @@
 
         <div class="form-group">
             <label for="telephone">📞 Téléphone</label>
-            <input type="text" name="telephone" id="telephone" value="{{ default_telephone }}" placeholder="Ex: +229 97 00 00 00" required>
+            <input type="text" name="telephone" id="telephone" value="{{ default_telephone }}"
+                placeholder="Ex: +229 97 00 00 00" required>
         </div>
 
         <div class="form-group">
             <label for="adresse">🏠 Adresse de livraison</label>
-            <textarea name="adresse" id="adresse" placeholder="Adresse complète" required>{{ default_adresse }}</textarea>
+            <textarea name="adresse" id="adresse" placeholder="Adresse complète"
+                required>{{ default_adresse }}</textarea>
         </div>
 
         <div class="form-group">
@@ -134,7 +136,8 @@
             <select name="legumineuse" id="legumineuse" required>
                 <option value="">-- Sélectionnez une légumineuse --</option>
                 {% for l in legumineuses %}
-                <option value="{{ l.id }}" data-price="{{ l.prix_unitaire|default:'' }}">{{ l.nom }} ({{ l.type_legumineuse }})</option>
+                <option value="{{ l.id }}" data-price="{{ l.prix_unitaire|default:'' }}">{{ l.nom }} ({{
+                    l.type_legumineuse }})</option>
                 {% endfor %}
             </select>
         </div>
@@ -146,12 +149,14 @@
 
         <div class="form-group">
             <label for="prix_unitaire">💰 Prix unitaire (FCFA/kg)</label>
-            <input type="text" name="prix_unitaire" id="prix_unitaire" readonly style="background:#f5f5f5;" placeholder="Sélectionnez une légumineuse pour voir le prix">
+            <input type="text" name="prix_unitaire" id="prix_unitaire" readonly style="background:#f5f5f5;"
+                placeholder="Sélectionnez une légumineuse pour voir le prix">
         </div>
 
         <div class="form-group">
             <label for="prix_total">💵 Prix total</label>
-            <input type="text" id="prix_total" readonly style="background:#f5f5f5; font-weight:700;" placeholder="0 FCFA">
+            <input type="text" id="prix_total" readonly style="background:#f5f5f5; font-weight:700;"
+                placeholder="0 FCFA">
         </div>
 
         <div class="button-group">
@@ -161,19 +166,19 @@
     </form>
 
     <script>
-        (function(){
+        (function () {
             const select = document.getElementById('legumineuse');
             const prixInput = document.getElementById('prix_unitaire');
             const quantiteInput = document.getElementById('quantite');
             const prixTotal = document.getElementById('prix_total');
 
-            function updatePrice(){
+            function updatePrice() {
                 const option = select.options[select.selectedIndex];
                 const price = option ? option.dataset.price : '';
                 prixInput.value = price ? parseFloat(price).toFixed(0) : '';
                 updateTotal();
             }
-            function updateTotal(){
+            function updateTotal() {
                 const q = parseFloat(quantiteInput.value) || 0;
                 const p = parseFloat(prixInput.value) || 0;
                 const total = q * p;
@@ -188,7 +193,9 @@
     </script>
 </div>
 <div style="margin-top: 2rem;">
-    <a class="btn" href="{% url 'mes_commandes' %}" style="display: inline-block; padding: 0.7rem 1.5rem; background: #f0f0f0; color: #333; border-radius: 6px; text-decoration: none; font-weight: 600;">⬅ Retour à mes commandes</a>
+    <a class="btn" href="{% url 'mes_commandes' %}"
+        style="display: inline-block; padding: 0.7rem 1.5rem; background: #f0f0f0; color: #333; border-radius: 6px; text-decoration: none; font-weight: 600;">⬅
+        Retour à mes commandes</a>
 </div>
 
 {% endblock %}

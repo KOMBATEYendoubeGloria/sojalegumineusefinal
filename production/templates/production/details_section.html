@@ -1,0 +1,225 @@
+{% extends 'public/base.html' %}
+
+{% block content %}
+<style>
+    .details-header {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(45, 80, 22, 0.2);
+    }
+
+    .details-header h2 {
+        margin: 0;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .section-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .detail-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid #edf2f7;
+    }
+
+    .detail-card h3 {
+        margin-top: 0;
+        color: #2d5016;
+        border-bottom: 2px solid #f0f4f8;
+        padding-bottom: 0.8rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #f7fafc;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #718096;
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: #2d3748;
+        font-weight: 600;
+    }
+
+    .badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-primary {
+        background: #ebf8ff;
+        color: #3182ce;
+    }
+
+    .badge-success {
+        background: #f0fff4;
+        color: #38a169;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        background: white;
+        color: #2d5016;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        border: 2px solid #2d5016;
+        transition: all 0.3s;
+    }
+
+    .btn-back:hover {
+        background: #2d5016;
+        color: white;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        color: #718096;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.8rem;
+        background: #f7fafc;
+    }
+
+    td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #edf2f7;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="container" style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+    <a href="{% url 'sections' %}" class="btn-back">
+        <span class="material-icons">arrow_back</span> Retour aux sections
+    </a>
+
+    <div class="details-header">
+        <h2><span class="material-icons">grid_view</span> Section : {{ section.nom }}</h2>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Superficie : <strong>{{ section.superficie }} hectares</strong>
+        </p>
+    </div>
+
+    <div class="section-grid">
+        <!-- Carte Employés -->
+        <div class="detail-card">
+            <h3><span class="material-icons">groups</span> Employés associés</h3>
+            {% if employes %}
+            <ul class="info-list">
+                {% for e in employes %}
+                <li class="info-item">
+                    <span class="info-value">{{ e.nom }}</span>
+                    <span class="badge badge-primary">{{ e.telephone }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucun employé directement affecté à cette
+                section.</p>
+            {% endif %}
+
+            {% if section.employe %}
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: #fffaf0; border-radius: 8px; border-left: 4px solid #ed8936;">
+                <p style="margin: 0; font-size: 0.85rem; color: #7b341e; font-weight: 600;">Responsable de section :</p>
+                <p style="margin: 0.3rem 0 0 0; font-weight: 700;">{{ section.employe.nom }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Carte Légumineuses -->
+        <div class="detail-card">
+            <h3><span class="material-icons">eco</span> Légumineuses cultivées</h3>
+            {% if legumineuses %}
+            <ul class="info-list">
+                {% for l in legumineuses %}
+                <li class="info-item">
+                    <span class="info-value">{{ l.nom }}</span>
+                    {% if l.prix_unitaire %}
+                    <span class="badge badge-success">{{ l.prix_unitaire }} FCFA/kg</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucune légumineuse spécifiquement associée à
+                cette section.</p>
+            {% endif %}
+        </div>
+
+        <!-- Carte Récoltes récentes -->
+        <div class="detail-card" style="grid-column: 1 / -1;">
+            <h3><span class="material-icons">inventory_2</span> Historique des récoltes</h3>
+            {% if recoltes %}
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Légumineuse</th>
+                            <th>Quantité</th>
+                            <th>Date</th>
+                            <th>Qualité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in recoltes %}
+                        <tr>
+                            <td><strong>{{ r.legumineuse.nom }}</strong></td>
+                            <td>{{ r.quantite }} kg</td>
+                            <td>{{ r.date|date:"d M Y" }}</td>
+                            <td><span
+                                    class="badge {% if r.qualite == 'Excellente' %}badge-success{% else %}badge-primary{% endif %}">{{
+                                    r.qualite }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucune récolte enregistrée pour cette section.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

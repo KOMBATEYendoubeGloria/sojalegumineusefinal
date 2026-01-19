@@ -39,8 +39,37 @@ class Commande(models.Model):
             return self.quantite * self.prix_unitaire
         return 0
     
-    def est_en_retard(self):
-        if self.date_livraison_prevue and self.statut != 'Livrée':
-            return self.date_livraison_prevue < timezone.now().date()
-        return False
+    def save(self, *args, **kwargs):
+        # Import inside method to avoid potential circular imports
+        from stock.models import Stock
+        
+        # Check if it's an existing instance to compare status
+        if self.pk:
+            old_instance = Commande.objects.get(pk=self.pk)
+            old_statut = old_instance.statut
+        else:
+            old_statut = 'En attente' # Default for new
+
+        new_statut = self.statut
+
+        # Define states where stock should be deducted
+        deducted_states = ['Confirmée', 'En livraison', 'Livrée']
+        # Define states where stock should be present (not deducted)
+        raw_states = ['En attente', 'Annulée']
+
+        # Determine direction
+        should_deduct = (new_statut in deducted_states) and (old_statut in raw_states)
+        should_restore = (new_statut in raw_states) and (old_statut in deducted_states)
+
+        stock_entry = Stock.objects.filter(legumineuse=self.legumineuse).first()
+
+        if stock_entry:
+            if should_deduct:
+                stock_entry.quantite_disponible -= self.quantite
+                stock_entry.save()
+            elif should_restore:
+                stock_entry.quantite_disponible += self.quantite
+                stock_entry.save()
+        
+        super().save(*args, **kwargs)
 

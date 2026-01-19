@@ -2,7 +2,7 @@
 
 {% block head_extra %}
 <style>
-    .legumineuses-header {
+    .header-section {
         background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
         color: white;
         padding: 2rem;
@@ -12,129 +12,193 @@
         justify-content: space-between;
         align-items: center;
     }
-    
-    .legumineuses-header h2 {
+
+    .header-section h2 {
         margin: 0;
         font-size: 1.8rem;
     }
-    
-    .section-group {
-        margin-bottom: 2.5rem;
-    }
-    
-    .section-header {
-        background: #f5f5f5;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        border-left: 4px solid #2d5016;
-    }
-    
-    .section-header h3 {
-        margin: 0;
-        color: #2d5016;
-        font-size: 1.2rem;
-    }
-    
-    .legume-type {
-        display: inline-block;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        margin-right: 0.5rem;
-    }
-    
-    .type-soja { background: #c8e6c9; color: #1b5e20; }
-    .type-haricot { background: #fff9c4; color: #f57f17; }
-    .type-arachide { background: #bbdefb; color: #1565c0; }
-    .type-niebe { background: #f8bbd0; color: #ad1457; }
-    
-    .legumineuses-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .legume-item {
-        padding: 1rem;
-        border: 1px solid #e0e0e0;
-        margin-bottom: 0.5rem;
-        border-radius: 6px;
+
+    .btn-add {
         background: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .legume-item:hover {
-        background: #f9f9f9;
-        border-color: #2d5016;
-    }
-    
-    .go-back {
-        margin-top: 2rem;
-        display: inline-block;
-    }
-    
-    .go-back a {
-        background: #2d5016;
-        color: white;
+        color: #2d5016;
         padding: 0.7rem 1.5rem;
         border-radius: 6px;
         text-decoration: none;
-        transition: background 0.3s;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
-    
-    .go-back a:hover {
-        background: #1f3b0f;
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead tr {
+        background: #f8f9fa;
+        border-bottom: 2px solid #eee;
+    }
+
+    .data-table th {
+        padding: 1.2rem;
+        text-align: left;
+        color: #2d5016;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+        padding: 1.2rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+
+    .data-table tbody tr:hover {
+        background: #f9fbf7;
+    }
+
+    .price-tag {
+        color: #27ae60;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .section-badge {
+        background: #e9f5e9;
+        color: #2d5016;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .actions-cell {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .action-btn {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-edit {
+        color: #f39c12;
+        background: #fff9eb;
+    }
+
+    .btn-edit:hover {
+        background: #f39c12;
+        color: white;
+    }
+
+    .btn-delete {
+        color: #e74c3c;
+        background: #fdf2f0;
+    }
+
+    .btn-delete:hover {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: #999;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="legumineuses-header">
-    <h2>📋 Légumineuses par section</h2>
+<div class="header-section">
+    <div>
+        <h2>🫘 Légumineuses Produites</h2>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Gestion de la liste des cultures de la ferme</p>
+    </div>
+    <a href="{% url 'ajouter_legumineuse' %}" class="btn-add">
+        <span class="material-icons">add_circle</span>
+        Nouvelle Légumineuse
+    </a>
 </div>
 
-{% regroup legumineuses by section as section_list %}
-
-{% for section_group in section_list %}
-    <div class="section-group">
-        <div class="section-header">
-            <h3>{{ section_group.grouper.nom }}</h3>
-            <div class="section-info">
-                📍 ID: {{ section_group.grouper.id_section }} | 📏 {{ section_group.grouper.superficie }} ha
-            </div>
-        </div>
-        
-        <ul class="legumineuses-list">
-            {% for legume in section_group.list %}
-                
-                <li class="legume-item">
-                    <div>
-                        <strong>{{ legume.nom }}</strong>
-                        <span class="legume-type type-{{ legume.type_legumineuse }}">
-                            {% if legume.type_legumineuse == 'soja' %}Soja
-                            {% elif legume.type_legumineuse == 'haricot' %}Haricot
-                            {% elif legume.type_legumineuse == 'arachide' %}Arachide
-                            {% elif legume.type_legumineuse == 'niebe' %}Niébé
-                            {% endif %}
-                        </span>
+<div class="table-container">
+    {% if legumineuses %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>🫘 Nom du Légume</th>
+                <th>📍 Section</th>
+                <th>💰 Prix Unitaire</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in legumineuses %}
+            <tr>
+                <td>
+                    <div style="font-weight: 700; color: #333; font-size: 1.1rem;">{{ l.nom }}</div>
+                    {% if l.type_legumineuse %}
+                    <small style="color: #999;">{{ l.type_legumineuse }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if l.section %}
+                    <span class="section-badge">{{ l.section.nom }}</span>
+                    {% else %}
+                    <span style="color: #bbb; font-style: italic;">Non assignée</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="price-tag">{{ l.prix_unitaire|default:"-" }}</span>
+                    <small style="color: #666; font-weight: 600;">FCFA / kg</small>
+                </td>
+                <td>
+                    <div class="actions-cell">
+                        <a href="{% url 'modifier_legumineuse' l.id %}" class="action-btn btn-edit">
+                            <span class="material-icons" style="font-size: 18px;">edit</span>
+                            Modifier
+                        </a>
+                        <a href="{% url 'supprimer_legumineuse' l.id %}" class="action-btn btn-delete">
+                            <span class="material-icons" style="font-size: 18px;">delete</span>
+                            Supprimer
+                        </a>
                     </div>
-                </li>
+                </td>
+            </tr>
             {% endfor %}
-        </ul>
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">inventory_2</span>
+        <p style="font-size: 1.2rem;">Aucune légumineuse enregistrée pour le moment.</p>
+        <a href="{% url 'ajouter_legumineuse' %}"
+            style="color: #2d5016; font-weight: 600; text-decoration: underline;">Ajouter votre première culture</a>
     </div>
-{% endfor %}
-
-{% if not legumineuses %}
-    <p style="text-align: center; color: #999; margin-top: 2rem;">
-        Aucune légumineuse enregistrée.
-    </p>
-{% endif %}
-
-<div class="go-back">
-    <a href="{% url 'dashboard' %}">⬅ Retour au dashboard</a>
+    {% endif %}
 </div>
 {% endblock %}

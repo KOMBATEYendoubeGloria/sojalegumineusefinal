@@ -1,211 +1,606 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {% extends 'public/base.html' %}
+{% extends 'public/base.html' %}
 
 {% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-    .dashboard-header {
-        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        /* Vert foncé profond */
         color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
     }
-    
-    .dashboard-header h1 {
-        margin: 0 0 0.5rem 0;
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
     }
-    
-    .dashboard-header p {
-        margin: 0;
+
+    .user-name {
+        font-weight: 600;
         font-size: 1.1rem;
-        opacity: 0.95;
+        margin-bottom: 0.2rem;
     }
-    
-    .dashboard-grid {
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        /* Vert plus clair */
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    /* KPI Cards Row */
+    .kpi-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
-    
-    .card {
+
+    .kpi-card {
         background: white;
-        border-radius: 12px;
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        border: 1px solid #eee;
-    }
-    
-    .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    }
-    
-    .card-icon {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-    
-    .card h3 {
-        margin: 0.5rem 0;
-        color: #2d5016;
-        font-size: 1rem;
-    }
-    
-    .card p {
-        margin: 0;
-        color: #666;
-        font-size: 0.9rem;
-        line-height: 1.4;
-    }
-    
-    .card-link {
-        display: block;
-        text-decoration: none;
-        color: inherit;
-    }
-    
-    .card-link:hover {
-        color: #2d5016;
-    }
-    
-    .card-link:hover h3 {
-        color: #3d6b1f;
-    }
-    
-    .section-title {
-        font-size: 1.3rem;
-        color: #2d5016;
-        margin: 2rem 0 1rem 0;
-        font-weight: 600;
-    }
-    
-    .logout-section {
-        margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 2px solid #eee;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
         display: flex;
-        gap: 1rem;
+        justify-content: space-between;
+        align-items: flex-start;
+        transition: transform 0.2s;
+        border-left: 4px solid transparent;
     }
-    
-    .logout-form button {
-        padding: 0.6rem 1.2rem !important;
+
+    .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .kpi-card.green-border {
+        border-left-color: #2d5016;
+    }
+
+    .kpi-card.yellow-border {
+        border-left-color: #f1c40f;
+    }
+
+    .kpi-card.blue-border {
+        border-left-color: #3498db;
+    }
+
+    .kpi-card.red-border {
+        border-left-color: #e74c3c;
+    }
+
+    .kpi-info h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .kpi-info p {
+        margin: 0.5rem 0 0;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-icon-box {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .bg-green {
+        background-color: rgba(45, 80, 22, 0.1);
+        color: #2d5016;
+    }
+
+    .bg-yellow {
+        background-color: rgba(241, 196, 15, 0.1);
+        color: #f1c40f;
+    }
+
+    .bg-blue {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+
+    .bg-red {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+
+
+    /* Charts Rows */
+    .charts-row-top {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .charts-row-bottom {
+        display: grid;
+        grid-template-columns: 1fr;
+        /* Full width for line chart */
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .widget-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .widget-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .widget-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    /* Table clean styling */
+    .table-clean {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-clean th {
+        text-align: left;
+        color: #95a5a6;
         font-weight: 600;
-        border-radius: 8px;
-        border: 2px solid #dc3545 !important;
-        background: transparent !important;
-        color: #dc3545;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        font-size: 0.85rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f1f2f6;
     }
-    
-    .logout-form button:hover {
-        background: #dc3545 !important;
-        color: white;
+
+    .table-clean td {
+        padding: 1rem 0;
+        border-bottom: 1px solid #f9f9f9;
+        font-size: 0.95rem;
+        color: #2c3e50;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .charts-row-top {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
+            text-align: left;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .nav-menu {
+            display: none;
+            /* Simplification pour mobile */
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
-    <h1> Tableau de bord de la Ferme Mopkokpo</h1>
-    <p>Bienvenue <strong>{{ user.username }}</strong>{% if user.is_staff %}{% else %}Client{% endif %}</p>
+<div class="app-container">
+
+    <!-- Sidebar Left -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username|title }}</div>
+                <div class="user-role">{% if user.is_staff %}Administrateur{% else %}Client{% endif %}</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            
+            <!-- Liens exacts du dashboard original -->
+            <a href="/employes/" class="nav-item">
+                <span class="material-icons nav-icon">groups</span>
+                Gestion employés
+            </a>
+            <a href="/sections/" class="nav-item">
+                <span class="material-icons nav-icon">grid_view</span>
+                Gestion sections
+            </a>
+            <a href="/legumineuses/" class="nav-item">
+                <span class="material-icons nav-icon">grass</span>
+                Gestion légumineuses
+            </a>
+            <a href="/recoltes/" class="nav-item">
+                <span class="material-icons nav-icon">agriculture</span>
+                Suivi récoltes
+            </a>
+            <a href="/stock/" class="nav-item">
+                <span class="material-icons nav-icon">inventory_2</span>
+                Stock
+            </a>
+            <a href="/ventes/" class="nav-item">
+                <span class="material-icons nav-icon">payments</span>
+                Ventes et revenus
+            </a>
+            <a href="/depenses/" class="nav-item">
+                <span class="material-icons nav-icon">account_balance_wallet</span>
+                Achats et dépenses
+            </a>
+
+            {% if user.is_staff %}
+            <div style="margin: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            <a href="{% url 'commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">assignment</span>
+                Gestion des Commandes
+            </a>
+            {% endif %}
+
+            <a href="{% url 'dashboard_commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">local_shipping</span>
+                Suivi Livraisons
+            </a>
+
+             <!-- Bouton Déconnexion -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item"
+                        style="background:none; border:none; width:100%; cursor:pointer; font-size:1rem; font-family:inherit;">
+                        <span class="material-icons nav-icon">logout</span>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+           
+        </nav>
+    </aside>
+
+    <!-- Content Right -->
+    <main class="main-content">
+        <header class="header-bar">
+            <div class="page-title">Tableau de Bord</div>
+            <div style="color: #95a5a6;">{{ now|date:"l, d F Y" }}</div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-row">
+            <div class="kpi-card green-border">
+                <div class="kpi-info">
+                    <h3>{{ revenu_total }}</h3>
+                    <p>Revenus (FCFA)</p>
+                </div>
+                <div class="kpi-icon-box bg-green">
+                    <span class="material-icons">attach_money</span>
+                </div>
+            </div>
+
+            <div class="kpi-card blue-border">
+                <div class="kpi-info">
+                    <h3>{{ commandes_attente }}</h3>
+                    <p>Commandes en attente</p>
+                </div>
+                <div class="kpi-icon-box bg-blue">
+                    <span class="material-icons">shopping_cart</span>
+                </div>
+            </div>
+
+            <div class="kpi-card red-border">
+                <div class="kpi-info">
+                    <h3>{{ depenses_total }}</h3>
+                    <p>Dépenses (FCFA)</p>
+                </div>
+                <div class="kpi-icon-box bg-red">
+                    <span class="material-icons">trending_down</span>
+                </div>
+            </div>
+
+            <div class="kpi-card yellow-border">
+                <div class="kpi-info">
+                    <h3>{{ bilan }}</h3>
+                    <p>Bilan Net (FCFA)</p>
+                </div>
+                <div class="kpi-icon-box bg-yellow">
+                    <span class="material-icons">savings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1: Production (Bar) & Stock (Doughnut) -->
+        <div class="charts-row-top">
+            <div class="widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">📦 Production par légumineuse</div>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="productionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">🏪 Stock disponible</div>
+                </div>
+                <div style="height: 300px; display:flex; justify-content:center;">
+                    <canvas id="stockChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2: Ventes (Line) -->
+        <div class="charts-row-bottom">
+            <div class="widget-card">
+                <div class="widget-header">
+                    <div class="widget-title">📈 Ventes par légumineuse (kg)</div>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="ventesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="widget-card">
+            <div class="widget-header">
+                <div class="widget-title">Dernières Commandes</div>
+            </div>
+            <table class="table-clean">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cmd in dernieres_commandes %}
+                    <tr>
+                        <td style="display:flex; align-items:center; gap:0.5rem;">
+                            <div
+                                style="width:30px; height:30px; background:#f1f2f6; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; color:#7f8c8d;">
+                                {{ cmd.client.username|first|upper }}
+                            </div>
+                            {{ cmd.client.username }}
+                        </td>
+                        <td>{{ cmd.date_commande|date:"d M Y" }}</td>
+                        <td>
+                            {% if cmd.statut == 'Livrée' %}
+                            <span style="color:#27ae60; font-weight:600; font-size:0.85rem;">Validé</span>
+                            {% elif cmd.statut == 'En attente' %}
+                            <span style="color:#f39c12; font-weight:600; font-size:0.85rem;">En attente</span>
+                            {% else %}
+                            <span style="color:#c0392b; font-weight:600; font-size:0.85rem;">{{ cmd.statut|title
+                                }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" style="color:#3498db; text-decoration:none; font-size:0.9rem;">Détails</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center;">Aucune commande récente</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </main>
 </div>
 
-<div class="section-title">📋 Gestion de la ferme</div>
-<div class="dashboard-grid">
-    <div class="card">
-        <a href="/employes/" class="card-link">
-            <span class="card-icon">👥</span>
-            <h3>Gestion des employés</h3>
-            <p>Gérer les employés et leur tâches</p>
-        </a>
-    </div>
-    
-    <div class="card">
-        <a href="/legumineuses/" class="card-link">
-            <span class="card-icon">🫘</span>
-            <h3>Gestion des légumineuses</h3>
-            <p>Ajouter et gérer les cultures</p>
-        </a>
-    </div>
-    
-    <div class="card">
-        <a href="/recoltes/" class="card-link">
-            <span class="card-icon">🌾</span>
-            <h3>Suivi des récoltes</h3>
-            <p>Enregistrer et suivre les récoltes</p>
-        </a>
-    </div>
-    
-    <div class="card">
-        <a href="/stock/" class="card-link">
-            <span class="card-icon">📦</span>
-            <h3>Stock</h3>
-            <p>Consulter le stock disponible</p>
-        </a>
-    </div>
-    
-    <div class="card">
-        <a href="/ventes/" class="card-link">
-            <span class="card-icon">💰</span>
-            <h3>Ventes et revenus</h3>
-            <p>Visualiser les ventes et revenus</p>
-        </a>
-    </div>
-    
-    <div class="card">
-        <a href="/depenses/" class="card-link">
-            <span class="card-icon">💸</span>
-            <h3>Achats et dépenses</h3>
-            <p>Gérer les achats et dépenses</p>
-        </a>
-    </div>
-</div>
+<script>
+    // Données injectées depuis Django
+    const labels = JSON.parse('{{ labels|safe }}');
+    const productionData = JSON.parse('{{ production_data|safe }}');
+    const stockData = JSON.parse('{{ stock_data|safe }}');
+    const ventesData = JSON.parse('{{ ventes_data|safe }}');
+    const backgroundColors = JSON.parse('{{ background_colors|safe }}');
 
-<div class="section-title">📊 Rapports et commandes</div>
-<div class="dashboard-grid">
-    {% if user.is_staff %}
-    <div class="card">
-        <a href="{% url 'commandes' %}" class="card-link">
-            <span class="card-icon">📋</span>
-            <h3>Gestion des commandes</h3>
-            <p>Gérer tous les statuts de commandes</p>
-        </a>
-    </div>
-    {% endif %}
-    
-    <div class="card">
-        <a href="{% url 'dashboard_commandes' %}" class="card-link">
-            <span class="card-icon">🚚</span>
-            <h3>Commandes & livraisons</h3>
-            <p>Voir les commandes par client</p>
-        </a>
-    </div>
-    
-    <div class="card">
-        <a href="{% url 'statistiques' %}" class="card-link">
-            <span class="card-icon">📈</span>
-            <h3>Statistiques</h3>
-            <p>Voir les graphiques et statistiques</p>
-        </a>
-    </div>
-</div>
+    // --- 1. Production Chart (Bar) ---
+    const ctxProd = document.getElementById('productionChart').getContext('2d');
+    new Chart(ctxProd, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Production (kg)',
+                data: productionData,
+                backgroundColor: backgroundColors,
+                borderRadius: 4,
+                barPercentage: 0.6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { borderDash: [4, 4], color: '#f0f2f5' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
+    });
 
+    // --- 2. Stock Chart (Doughnut) ---
+    const ctxStock = document.getElementById('stockChart').getContext('2d');
+    new Chart(ctxStock, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: stockData,
+                backgroundColor: backgroundColors,
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, padding: 15 } }
+            }
+        }
+    });
 
-
+    // --- 3. Ventes Chart (Line) ---
+    const ctxVente = document.getElementById('ventesChart').getContext('2d');
+    new Chart(ctxVente, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Ventes (kg)',
+                data: ventesData,
+                borderColor: '#2d5016',
+                backgroundColor: 'rgba(45, 80, 22, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: backgroundColors,
+                pointBorderColor: '#2d5016',
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { borderDash: [4, 4], color: '#f0f2f5' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
+    });
+</script>
 {% endblock %}
-
-</body>
-</html>

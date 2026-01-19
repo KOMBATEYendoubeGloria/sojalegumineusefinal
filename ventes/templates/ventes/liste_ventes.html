@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,39 +141,41 @@
         }
     </style>
 </head>
+
 <body>
-{% extends 'public/base.html' %}
+    {% extends 'public/base.html' %}
 
-{% block content %}
-<div class="content-wrapper"></div>
-<h2>Historique des ventes</h2>
+    {% block content %}
+    <div class="content-wrapper"></div>
+    <h2>Historique des ventes</h2>
 
-<table border="1">
-    <tr>
-        <th>Légumineuse</th>
-        <th>Quantité (kg)</th>
-        <th>Prix unitaire</th>
-        <th>Client</th>
-        <th>Téléphone</th>
-        <th>Adresse</th>
-        <th>Date</th>
-        <th>Revenu</th>
-    </tr>
+    <table border="1">
+        <tr>
+            <th>Légumineuse</th>
+            <th>Quantité (kg)</th>
+            <th>Prix unitaire</th>
+            <th>Client</th>
+            <th>Téléphone</th>
+            <th>Adresse</th>
+            <th>Date</th>
+            <th>Revenu</th>
+        </tr>
 
-    {% for v in ventes %}
-    <tr>
-        <td>{{ v.legumineuse.nom }}</td>
-        <td>{{ v.quantite }}</td>
-        <td>{{ v.prix_unitaire|floatformat:0 }}</td>
-        <td>{{ v.client }}</td>
-        <td>{{ v.client_telephone|default:'-' }}</td>
-        <td>{{ v.client_adresse|default:'-' }}</td>
-        <td>{{ v.date }}</td>
-        <td>{{ v.revenu|floatformat:0 }}</td>
-    </tr>
-    {% endfor %}
-</table>
+        {% for v in ventes %}
+        <tr>
+            <td>{{ v.legumineuse.nom }}</td>
+            <td>{{ v.quantite }}</td>
+            <td>{{ v.prix_unitaire|floatformat:0 }}</td>
+            <td>{{ v.client }}</td>
+            <td>{{ v.client_telephone|default:'-' }}</td>
+            <td>{{ v.client_adresse|default:'-' }}</td>
+            <td>{{ v.date }}</td>
+            <td>{{ v.revenu|floatformat:0 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 
-{% endblock %}
+    {% endblock %}
 </body>
+
 </html>

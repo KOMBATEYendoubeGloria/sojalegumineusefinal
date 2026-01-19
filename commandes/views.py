@@ -16,9 +16,14 @@ def liste_commandes(request):
     if statut_filter:
         commandes = commandes.filter(statut=statut_filter)
     
+    statuts_list = [
+        {'code': code, 'label': label, 'selected': (code == statut_filter)} 
+        for code, label in Commande.STATUT_CHOICES
+    ]
+
     return render(request, 'commandes/liste_commande.html', {
         'commandes': commandes,
-        'statuts': dict(Commande.STATUT_CHOICES),
+        'statuts_list': statuts_list,
         'current_statut': statut_filter
     })
 
@@ -138,7 +143,28 @@ def changer_statut_commande(request, commande_id):
             commande.save()
             return redirect('commandes')
     
+    statuts_data = {
+        'En attente': 'background: #fff3cd; color: #856404;',
+        'Confirmée': 'background: #d1ecf1; color: #0c5460;',
+        'En livraison': 'background: #e2e3e5; color: #383d41;',
+        'Livrée': 'background: #d4edda; color: #155724;',
+        'Annulée': 'background: #f8d7da; color: #721c24;',
+    }
+
+    statuts_list = [
+        {
+            'code': code, 
+            'label': label, 
+            'is_current': (code == commande.statut),
+            'style': statuts_data.get(code, 'background: #eee; color: #333;')
+        } 
+        for code, label in Commande.STATUT_CHOICES
+    ]
+    
+    client_display_name = commande.client_nom or commande.client.get_full_name() or commande.client.username
+
     return render(request, 'commandes/changer_statut.html', {
         'commande': commande,
-        'statuts': Commande.STATUT_CHOICES
+        'statuts_list': statuts_list,
+        'client_display_name': client_display_name
     })
