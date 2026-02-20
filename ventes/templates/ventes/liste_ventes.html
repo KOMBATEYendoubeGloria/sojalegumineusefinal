@@ -1,181 +1,345 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿{% extends 'public/base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        /* Style pour la page liste producteurs */
-        body {
-            background: #f5f6fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+{% block head_extra %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-section h2 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .btn-add {
+        background: white;
+        color: #2d5016;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead tr {
+        background: #f8f9fa;
+        border-bottom: 2px solid #eee;
+    }
+
+    .data-table th {
+        padding: 1.2rem;
+        text-align: left;
+        color: #2d5016;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+        padding: 1.2rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+
+    .data-table tbody tr:hover {
+        background: #f9fbf7;
+    }
+
+    .price-tag {
+        color: #27ae60;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: #999;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
         }
 
-        /* Barre de navigation statique */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            background: transparent;
-            box-shadow: none;
-        }
-
-        nav a:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: none;
-        }
-
-        /* Contenu principal avec marge pour la nav */
-        .content-wrapper {
-            margin-top: 80px;
-            padding: 2rem;
-        }
-
-        h2 {
-            color: #2d5016;
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 3px solid #3d6b1f;
-        }
-
-        table {
+        .sidebar {
             width: 100%;
-            background: #ffffff;
-            border-collapse: collapse;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            border: none !important;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
         }
 
-        table tr {
-            border-bottom: 1px solid #e1e8ed;
-            transition: background 0.2s ease;
-        }
-
-        table tr:last-child {
-            border-bottom: none;
-        }
-
-        table tr:hover {
-            background: #f8f9fa;
-        }
-
-        table th {
-            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
-            color: white;
-            padding: 1.2rem 1.5rem;
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
             text-align: left;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none !important;
+            gap: 1rem;
         }
 
-        table td {
-            padding: 1rem 1.5rem;
-            color: #2c3e50;
-            font-size: 0.95rem;
-            border: none !important;
+        .nav-menu {
+            display: none;
         }
+    }
+</style>
+{% endblock %}
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                padding: 1rem;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+{% block content %}
+<div class="app-container">
 
-            .content-wrapper {
-                margin-top: 120px;
-                padding: 1rem;
-            }
+    <!-- Sidebar Left -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username|title }}</div>
+                <div class="user-role">{% if user.is_staff %}Administrateur{% else %}Client{% endif %}</div>
+            </div>
+        </div>
 
-            table {
-                font-size: 0.9rem;
-            }
+        <nav class="nav-menu">
+            <a href="/dashboard/" class="nav-item">
+                <span class="material-icons nav-icon">dashboard</span>
+                Tableau de bord
+            </a>
+            <a href="/employes/" class="nav-item">
+                <span class="material-icons nav-icon">groups</span>
+                Gestion employés
+            </a>
+            <a href="/sections/" class="nav-item">
+                <span class="material-icons nav-icon">grid_view</span>
+                Gestion sections
+            </a>
+            <a href="/legumineuses/" class="nav-item">
+                <span class="material-icons nav-icon">grass</span>
+                Gestion légumineuses
+            </a>
+            <a href="/recoltes/" class="nav-item">
+                <span class="material-icons nav-icon">agriculture</span>
+                Suivi récoltes
+            </a>
+            <a href="/stock/" class="nav-item">
+                <span class="material-icons nav-icon">inventory_2</span>
+                Stock
+            </a>
+            <a href="/ventes/" class="nav-item active">
+                <span class="material-icons nav-icon">payments</span>
+                Ventes et revenus
+            </a>
+            <a href="/depenses/" class="nav-item">
+                <span class="material-icons nav-icon">account_balance_wallet</span>
+                Achats et dépenses
+            </a>
 
-            table th,
-            table td {
-                padding: 0.8rem 1rem;
-            }
+            {% if user.is_staff %}
+            <div style="margin: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            <a href="{% url 'commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">assignment</span>
+                Gestion des Commandes
+            </a>
+            {% endif %}
 
-            h2 {
-                font-size: 1.5rem;
-            }
-        }
+            <a href="{% url 'dashboard_commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">local_shipping</span>
+                Suivi Livraisons
+            </a>
 
-        @media (max-width: 480px) {
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-        }
-    </style>
-</head>
+            <!-- Bouton Déconnexion -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item"
+                        style="background:none; border:none; width:100%; cursor:pointer; font-size:1rem; font-family:inherit; color: rgba(255,255,255,0.7);">
+                        <span class="material-icons nav-icon">logout</span>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </aside>
 
-<body>
-    {% extends 'public/base.html' %}
+    <!-- Content Right -->
+    <main class="main-content">
+        <div class="header-section">
+            <div>
+                <h2>💰 Historique des Ventes</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Suivi des transactions et revenus</p>
+            </div>
+            <!-- Bouton Nouvelle vente désactivé car URL non définie -->
+        </div>
 
-    {% block content %}
-    <div class="content-wrapper"></div>
-    <h2>Historique des ventes</h2>
-
-    <table border="1">
-        <tr>
-            <th>Légumineuse</th>
-            <th>Quantité (kg)</th>
-            <th>Prix unitaire</th>
-            <th>Client</th>
-            <th>Téléphone</th>
-            <th>Adresse</th>
-            <th>Date</th>
-            <th>Revenu</th>
-        </tr>
-
-        {% for v in ventes %}
-        <tr>
-            <td>{{ v.legumineuse.nom }}</td>
-            <td>{{ v.quantite }}</td>
-            <td>{{ v.prix_unitaire|floatformat:0 }}</td>
-            <td>{{ v.client }}</td>
-            <td>{{ v.client_telephone|default:'-' }}</td>
-            <td>{{ v.client_adresse|default:'-' }}</td>
-            <td>{{ v.date }}</td>
-            <td>{{ v.revenu|floatformat:0 }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    {% endblock %}
-</body>
-
-</html>
+        <div class="table-container">
+            {% if ventes %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Légumineuse</th>
+                        <th>Quantité (kg)</th>
+                        <th>Prix unitaire</th>
+                        <th>Client</th>
+                        <th>Téléphone</th>
+                        <th>Adresse</th>
+                        <th>Date</th>
+                        <th>Revenu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in ventes %}
+                    <tr>
+                        <td style="font-weight: 700; color: #333;">{{ v.legumineuse.nom }}</td>
+                        <td style="text-align: center;">{{ v.quantite }}</td>
+                        <td><span class="price-tag">{{ v.prix_unitaire|floatformat:0 }}</span> <small>FCFA</small></td>
+                        <td>{{ v.client }}</td>
+                        <td>{{ v.client_telephone|default:'-' }}</td>
+                        <td>{{ v.client_adresse|default:'-' }}</td>
+                        <td style="color: #666;">{{ v.date|date:"d/m/Y" }}</td>
+                        <td style="font-weight: 700; color: #27ae60;">{{ v.revenu|floatformat:0 }} <small>FCFA</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">receipt</span>
+                <p style="font-size: 1.2rem;">Aucune vente enregistrée pour le moment.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

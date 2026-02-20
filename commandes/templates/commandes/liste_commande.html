@@ -1,41 +1,167 @@
 {% extends 'public/base.html' %}
 
 {% block head_extra %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-    .commandes-header {
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .header-section {
         background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
         color: white;
         padding: 2rem;
         border-radius: 12px;
         margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    .commandes-header h2 {
+    .header-section h2 {
         margin: 0;
         font-size: 1.8rem;
     }
 
     .filter-section {
         background: white;
-        padding: 1rem;
-        border-radius: 8px;
+        padding: 1.2rem;
+        border-radius: 12px;
         margin-bottom: 1.5rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .filter-section label {
+        font-weight: 600;
+        color: #2d5016;
+        margin: 0;
     }
 
     .filter-section select {
         padding: 0.6rem 1rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 1rem;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background-color: #f8f9fa;
+        color: #333;
         cursor: pointer;
+        min-width: 200px;
+        transition: border-color 0.2s;
+    }
+
+    .filter-section select:focus {
+        border-color: #3d6b1f;
+        outline: none;
     }
 
     .table-container {
-        overflow-x: auto;
         background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
     }
 
     .commandes-table {
@@ -44,32 +170,37 @@
     }
 
     .commandes-table thead tr {
-        background: #f5f5f5;
-        border-bottom: 2px solid #e0e0e0;
+        background: #f8f9fa;
+        border-bottom: 2px solid #eee;
     }
 
     .commandes-table th {
-        padding: 1rem;
+        padding: 1.2rem;
         text-align: left;
-        font-weight: 600;
         color: #2d5016;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
     }
 
     .commandes-table td {
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
+        padding: 1.2rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
     }
 
     .commandes-table tbody tr:hover {
-        background: #f9f9f9;
+        background: #f9fbf7;
     }
 
     .statut-badge {
         display: inline-block;
-        padding: 0.4rem 0.8rem;
+        padding: 0.4rem 1rem;
         border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
     }
 
     .statut-badge.en-attente {
@@ -126,108 +257,202 @@
 
     .empty-state {
         text-align: center;
-        padding: 3rem;
-        background: white;
-        border-radius: 8px;
+        padding: 4rem;
+        color: #999;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
+            text-align: left;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: none;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- DEBUG: Using ifequal to avoid whitespace stripping issues with == -->
-<div class="commandes-header">
-    <h2>🚚 Gestion des commandes & livraisons</h2>
-    <p>Suivi de toutes les commandes clients</p>
-</div>
+<div class="app-container">
 
-<div class="filter-section">
-    <form method="get" style="display: flex; gap: 1rem; align-items: center;">
-        <label for="statut" style="font-weight: 600; margin: 0;">Filtrer par statut:</label>
-        <select name="statut" id="statut" onchange="this.form.submit()">
-            <option value="">-- Tous les statuts --</option>
-            {% for s in statuts_list %}
-            <option value="{{ s.code }}" {% if s.selected %}selected{% endif %}>{{ s.label }}</option>
-            {% endfor %}
-        </select>
-    </form>
-</div>
+    <!-- Sidebar Left -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username|title }}</div>
+                <div class="user-role">{% if user.is_staff %}Administrateur{% else %}Client{% endif %}</div>
+            </div>
+        </div>
 
-{% if commandes %}
-<div class="table-container">
-    <table class="commandes-table">
-        <thead>
-            <tr>
-                <th>👤 Client</th>
-                <th>🥬 Légumineuse</th>
-                <th>📦 Quantité</th>
-                <th>💰 Prix total</th>
-                <th>📅 Date commande</th>
-                <th>📆 Livraison prévue</th>
-                <th>✓ Statut</th>
-                <th>⚙️ Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in commandes %}
-            <tr>
-                <td>
-                    <strong>{{ c.client_nom|default:c.client.get_full_name|default:c.client.username }}</strong>
-                    <br>
-                    <small style="color: #999;">
-                        {% if c.client_telephone %}{{ c.client_telephone }}{% else %}-{% endif %}
-                    </small>
-                    <br>
-                    <small style="color: #999;">
-                        {% if c.client_adresse %}{{ c.client_adresse }}{% else %}-{% endif %}
-                    </small>
-                    <br>
-                    <small style="color: #999;">{{ c.client.email }}</small>
-                </td>
-                <td>{{ c.legumineuse.nom }}</td>
-                <td><strong>{{ c.quantite }} kg</strong></td>
-                <td>
-                    {% if c.prix_total %}
-                    <strong>{{ c.prix_total|floatformat:0 }}</strong> FCFA
-                    {% else %}
-                    <span style="color: #999;">-</span>
-                    {% endif %}
-                </td>
-                <td>{{ c.date_commande|date:"d/m/Y H:i" }}</td>
-                <td>
-                    {% if c.date_livraison_prevue %}
-                    {{ c.date_livraison_prevue|date:"d/m/Y" }}
-                    {% if c.est_en_retard %}
-                    <span style="color: #d32f2f; font-weight: 600;">⚠️ RETARD</span>
-                    {% endif %}
-                    {% else %}
-                    <span style="color: #999;">-</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <span
-                        class="statut-badge {% if c.statut == 'En attente' %}en-attente{% elif c.statut == 'Confirmée' %}confirmee{% elif c.statut == 'En livraison' %}en-livraison{% elif c.statut == 'Livrée' %}livree{% elif c.statut == 'Annulée' %}annulee{% endif %}">
-                        {{ c.statut }}
-                    </span>
-                </td>
-                <td>
-                    <div class="actions-cell">
-                        <a href="{% url 'changer_statut' c.id %}" class="action-btn btn-manage">
-                            <span class="material-icons" style="font-size: 18px;">settings</span>
-                            Gérer
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% else %}
-<div class="empty-state">
-    <p style="font-size: 2rem;">📋</p>
-    <p style="color: #999; font-size: 1.1rem;">Aucune commande trouvée.</p>
-</div>
-{% endif %}
+        <nav class="nav-menu">
+            <a href="/dashboard/" class="nav-item">
+                <span class="material-icons nav-icon">dashboard</span>
+                Tableau de bord
+            </a>
+            <a href="/employes/" class="nav-item">
+                <span class="material-icons nav-icon">groups</span>
+                Gestion employés
+            </a>
+            <a href="/sections/" class="nav-item">
+                <span class="material-icons nav-icon">grid_view</span>
+                Gestion sections
+            </a>
+            <a href="/legumineuses/" class="nav-item">
+                <span class="material-icons nav-icon">grass</span>
+                Gestion légumineuses
+            </a>
+            <a href="/recoltes/" class="nav-item">
+                <span class="material-icons nav-icon">agriculture</span>
+                Suivi récoltes
+            </a>
+            <a href="/stock/" class="nav-item">
+                <span class="material-icons nav-icon">inventory_2</span>
+                Stock
+            </a>
+            <a href="/ventes/" class="nav-item">
+                <span class="material-icons nav-icon">payments</span>
+                Ventes et revenus
+            </a>
+            <a href="/depenses/" class="nav-item">
+                <span class="material-icons nav-icon">account_balance_wallet</span>
+                Achats et dépenses
+            </a>
 
+            {% if user.is_staff %}
+            <div style="margin: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            <a href="{% url 'commandes' %}" class="nav-item active">
+                <span class="material-icons nav-icon">assignment</span>
+                Gestion des Commandes
+            </a>
+            {% endif %}
 
+            <a href="{% url 'dashboard_commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">local_shipping</span>
+                Suivi Livraisons
+            </a>
+
+            <!-- Bouton Déconnexion -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item"
+                        style="background:none; border:none; width:100%; cursor:pointer; font-size:1rem; font-family:inherit; color: rgba(255,255,255,0.7);">
+                        <span class="material-icons nav-icon">logout</span>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Content Right -->
+    <main class="main-content">
+        <div class="header-section">
+            <div>
+                <h2>🚚 Gestion des Commandes</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Suivi de toutes les commandes clients</p>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <form method="get" style="display: flex; gap: 1.5rem; align-items: center; width: 100%;">
+                <label for="statut">Filtrer par statut:</label>
+                <select name="statut" id="statut" onchange="this.form.submit()">
+                    <option value="">-- Tous les statuts --</option>
+                    {% for s in statuts_list %}
+                    <option value="{{ s.code }}" {% if s.selected %}selected{% endif %}>{{ s.label }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div class="table-container">
+            {% if commandes %}
+            <table class="commandes-table">
+                <thead>
+                    <tr>
+                        <th>👤 Client</th>
+                        <th>🥬 Légumineuse</th>
+                        <th>📦 Quantité</th>
+                        <th>💰 Prix total</th>
+                        <th>📅 Commande</th>
+                        <th>📆 Livraison prévue</th>
+                        <th>✓ Statut</th>
+                        <th>⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in commandes %}
+                    <tr>
+                        <td>
+                            <strong>{{ c.client_nom|default:c.client.get_full_name|default:c.client.username }}</strong>
+                            <br>
+                            <small style="color: #888;">{{ c.client_telephone|default:'' }}</small>
+                        </td>
+                        <td style="font-weight: 600;">{{ c.legumineuse.nom }}</td>
+                        <td><strong>{{ c.quantite }} kg</strong></td>
+                        <td>
+                            {% if c.prix_total %}
+                            <span style="font-weight: 700; color: #27ae60;">{{ c.prix_total|floatformat:0 }}</span>
+                            <small>FCFA</small>
+                            {% else %}
+                            <span style="color: #999;">-</span>
+                            {% endif %}
+                        </td>
+                        <td style="color: #666; font-size: 0.9rem;">{{ c.date_commande|date:"d/m/Y" }}</td>
+                        <td style="color: #666; font-size: 0.9rem;">
+                            {% if c.date_livraison_prevue %}
+                            {{ c.date_livraison_prevue|date:"d/m/Y" }}
+                            {% if c.est_en_retard %}
+                            <span style="color: #e74c3c; font-weight: 700;">⚠️ RETARD</span>
+                            {% endif %}
+                            {% else %}
+                            <span style="color: #999;">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span
+                                class="statut-badge {% if c.statut == 'En attente' %}en-attente{% elif c.statut == 'Confirmée' %}confirmee{% elif c.statut == 'En livraison' %}en-livraison{% elif c.statut == 'Livrée' %}livree{% elif c.statut == 'Annulée' %}annulee{% endif %}">
+                                {{ c.statut }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="{% url 'changer_statut' c.id %}" class="action-btn btn-manage">
+                                    <span class="material-icons" style="font-size: 18px;">settings</span>
+                                    Gérer
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">assignment_late</span>
+                <p style="font-size: 1.2rem;">Aucune commande trouvée.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
 {% endblock %}

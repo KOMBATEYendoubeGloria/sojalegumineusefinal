@@ -1,146 +1,357 @@
 {% extends 'public/base.html' %}
 
 {% block head_extra %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-    .commandes-header {
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .header-section {
         background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
         color: white;
         padding: 2rem;
         border-radius: 12px;
         margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    .commandes-header h2 {
+    .header-section h2 {
         margin: 0;
         font-size: 1.8rem;
     }
 
     .client-card {
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid #eee;
         background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        transition: all 0.3s ease;
-    }
-
-    .client-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f0;
     }
 
     .client-card h3 {
-        margin: 0 0 0.5rem 0;
         color: #2d5016;
-        font-size: 1.2rem;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
     }
 
     .client-info {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed #eee;
         color: #666;
         font-size: 0.9rem;
-        margin-bottom: 1rem;
     }
 
-    .commandes-table {
+    .data-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 1rem;
     }
 
-    .commandes-table th {
-        background: #f5f5f5;
-        color: #2d5016;
-        padding: 0.8rem;
+    .data-table th {
         text-align: left;
-        font-weight: 600;
-        border: 1px solid #ddd;
+        padding: 1rem;
+        background: #f8f9fa;
+        color: #2d5016;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
     }
 
-    .commandes-table td {
-        padding: 0.8rem;
-        border: 1px solid #ddd;
+    .data-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
     }
 
-    .commandes-table tr:hover {
-        background: #fafafa;
-    }
-
-    .statut {
+    .statut-badge {
         display: inline-block;
         padding: 0.3rem 0.8rem;
         border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
+        font-size: 0.8rem;
+        font-weight: 700;
     }
 
-    .statut.pending {
+    .statut-badge.pending {
         background: #fff3cd;
         color: #856404;
     }
 
-    .statut.confirmed {
+    .statut-badge.confirmed {
         background: #d1ecf1;
         color: #0c5460;
     }
 
-    .statut.completed {
+    .statut-badge.completed {
         background: #d4edda;
         color: #155724;
     }
 
     .empty-state {
         text-align: center;
-        padding: 2rem;
+        padding: 4rem;
         color: #999;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
+            text-align: left;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: none;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="commandes-header">
-    <h2>🚚 Commandes & Livraisons</h2>
-    <p>Suivi des commandes par client</p>
-</div>
+<div class="app-container">
 
-{% for entry in clients_commandes %}
-<div class="client-card">
-    <h3>👤 {{ entry.client.username }}</h3>
-    <div class="client-info">
-        📧 <strong>Email:</strong> {{ entry.client.email }}
-        | 📅 <strong>Inscrit:</strong> {{ entry.client.date_joined|date:"d/m/Y" }}
-    </div>
+    <!-- Sidebar Left -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username|title }}</div>
+                <div class="user-role">{% if user.is_staff %}Administrateur{% else %}Client{% endif %}</div>
+            </div>
+        </div>
 
-    <table class="commandes-table">
-        <thead>
-            <tr>
-                <th>🥬 Légumineuse</th>
-                <th>📦 Quantité (kg)</th>
-                <th>📅 Date commande</th>
-                <th>✓ Statut</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in entry.commandes %}
-            <tr>
-                <td>{{ c.legumineuse.nom }}</td>
-                <td><strong>{{ c.quantite }} kg</strong></td>
-                <td>{{ c.date_commande|date:"d/m/Y H:i" }}</td>
-                <td>
-                    <span
-                        class="statut {% if c.statut == 'En attente' %}pending{% elif c.statut == 'Confirmée' %}confirmed{% elif c.statut == 'Livrée' %}completed{% endif %}">
-                        {{ c.statut }}
-                    </span>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% empty %}
-<div class="empty-state">
-    <p style="font-size: 1.2rem; margin: 1rem 0;">ℹ️ Aucune commande trouvée.</p>
-</div>
-{% endfor %}
+        <nav class="nav-menu">
+            <a href="/dashboard/" class="nav-item">
+                <span class="material-icons nav-icon">dashboard</span>
+                Tableau de bord
+            </a>
+            <a href="/employes/" class="nav-item">
+                <span class="material-icons nav-icon">groups</span>
+                Gestion employés
+            </a>
+            <a href="/sections/" class="nav-item">
+                <span class="material-icons nav-icon">grid_view</span>
+                Gestion sections
+            </a>
+            <a href="/legumineuses/" class="nav-item">
+                <span class="material-icons nav-icon">grass</span>
+                Gestion légumineuses
+            </a>
+            <a href="/recoltes/" class="nav-item">
+                <span class="material-icons nav-icon">agriculture</span>
+                Suivi récoltes
+            </a>
+            <a href="/stock/" class="nav-item">
+                <span class="material-icons nav-icon">inventory_2</span>
+                Stock
+            </a>
+            <a href="/ventes/" class="nav-item">
+                <span class="material-icons nav-icon">payments</span>
+                Ventes et revenus
+            </a>
+            <a href="/depenses/" class="nav-item">
+                <span class="material-icons nav-icon">account_balance_wallet</span>
+                Achats et dépenses
+            </a>
 
-<a class="btn" href="{% url 'dashboard' %}" style="margin-top: 2rem;">⬅ Retour au dashboard</a>
+            {% if user.is_staff %}
+            <div style="margin: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            <a href="{% url 'commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">assignment</span>
+                Gestion des Commandes
+            </a>
+            {% endif %}
+
+            <a href="{% url 'dashboard_commandes' %}" class="nav-item active">
+                <span class="material-icons nav-icon">local_shipping</span>
+                Suivi Livraisons
+            </a>
+
+            <!-- Bouton Déconnexion -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item"
+                        style="background:none; border:none; width:100%; cursor:pointer; font-size:1rem; font-family:inherit; color: rgba(255,255,255,0.7);">
+                        <span class="material-icons nav-icon">logout</span>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Content Right -->
+    <main class="main-content">
+        <div class="header-section">
+            <div>
+                <h2>🚚 Suivi des Livraisons</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Historique des commandes par client</p>
+            </div>
+        </div>
+
+        {% for entry in clients_commandes %}
+        <div class="client-card">
+            <h3><span class="material-icons">person</span> {{ entry.client.username|title }}</h3>
+            <div class="client-info">
+                <span><strong>Email:</strong> {{ entry.client.email }}</span>
+                <span><strong>Inscrit le:</strong> {{ entry.client.date_joined|date:"d/m/Y" }}</span>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>🥬 Légumineuse</th>
+                        <th>📦 Quantité</th>
+                        <th>📅 Date commande</th>
+                        <th>✓ Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in entry.commandes %}
+                    <tr>
+                        <td style="font-weight: 600;">{{ c.legumineuse.nom }}</td>
+                        <td><strong>{{ c.quantite }} kg</strong></td>
+                        <td style="color: #666;">{{ c.date_commande|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span
+                                class="statut-badge {% if c.statut == 'En attente' %}pending{% elif c.statut == 'Confirmée' %}confirmed{% elif c.statut == 'Livrée' %}completed{% endif %}">
+                                {{ c.statut }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">info_outline</span>
+            <p style="font-size: 1.2rem;">Aucune commande trouvée.</p>
+        </div>
+        {% endfor %}
+    </main>
+</div>
 {% endblock %}

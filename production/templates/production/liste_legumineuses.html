@@ -2,6 +2,214 @@
 
 {% block head_extra %}
 <style>
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
     .header-section {
         background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
         color: white;
@@ -130,75 +338,207 @@
         padding: 4rem;
         color: #999;
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
+            text-align: left;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: none;
+        }
+    }
+
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
+            text-align: left;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: none;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="header-section">
-    <div>
-        <h2>🫘 Légumineuses Produites</h2>
-        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Gestion de la liste des cultures de la ferme</p>
-    </div>
-    <a href="{% url 'ajouter_legumineuse' %}" class="btn-add">
-        <span class="material-icons">add_circle</span>
-        Nouvelle Légumineuse
-    </a>
-</div>
+<div class="app-container">
 
-<div class="table-container">
-    {% if legumineuses %}
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>🫘 Nom du Légume</th>
-                <th>📍 Section</th>
-                <th>💰 Prix Unitaire</th>
-                <th>⚙️ Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for l in legumineuses %}
-            <tr>
-                <td>
-                    <div style="font-weight: 700; color: #333; font-size: 1.1rem;">{{ l.nom }}</div>
-                    {% if l.type_legumineuse %}
-                    <small style="color: #999;">{{ l.type_legumineuse }}</small>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if l.section %}
-                    <span class="section-badge">{{ l.section.nom }}</span>
-                    {% else %}
-                    <span style="color: #bbb; font-style: italic;">Non assignée</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <span class="price-tag">{{ l.prix_unitaire|default:"-" }}</span>
-                    <small style="color: #666; font-weight: 600;">FCFA / kg</small>
-                </td>
-                <td>
-                    <div class="actions-cell">
-                        <a href="{% url 'modifier_legumineuse' l.id %}" class="action-btn btn-edit">
-                            <span class="material-icons" style="font-size: 18px;">edit</span>
-                            Modifier
-                        </a>
-                        <a href="{% url 'supprimer_legumineuse' l.id %}" class="action-btn btn-delete">
-                            <span class="material-icons" style="font-size: 18px;">delete</span>
-                            Supprimer
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="empty-state">
-        <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">inventory_2</span>
-        <p style="font-size: 1.2rem;">Aucune légumineuse enregistrée pour le moment.</p>
-        <a href="{% url 'ajouter_legumineuse' %}"
-            style="color: #2d5016; font-weight: 600; text-decoration: underline;">Ajouter votre première culture</a>
-    </div>
-    {% endif %}
+    <!-- Sidebar Left -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username|title }}</div>
+                <div class="user-role">{% if user.is_staff %}Administrateur{% else %}Client{% endif %}</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="/dashboard/" class="nav-item">
+                <span class="material-icons nav-icon">dashboard</span>
+                Tableau de bord
+            </a>
+            <a href="/employes/" class="nav-item">
+                <span class="material-icons nav-icon">groups</span>
+                Gestion employés
+            </a>
+            <a href="/sections/" class="nav-item">
+                <span class="material-icons nav-icon">grid_view</span>
+                Gestion sections
+            </a>
+            <a href="/legumineuses/" class="nav-item active">
+                <span class="material-icons nav-icon">grass</span>
+                Gestion légumineuses
+            </a>
+            <a href="/recoltes/" class="nav-item">
+                <span class="material-icons nav-icon">agriculture</span>
+                Suivi récoltes
+            </a>
+            <a href="/stock/" class="nav-item">
+                <span class="material-icons nav-icon">inventory_2</span>
+                Stock
+            </a>
+            <a href="/ventes/" class="nav-item">
+                <span class="material-icons nav-icon">payments</span>
+                Ventes et revenus
+            </a>
+            <a href="/depenses/" class="nav-item">
+                <span class="material-icons nav-icon">account_balance_wallet</span>
+                Achats et dépenses
+            </a>
+
+            {% if user.is_staff %}
+            <div style="margin: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            <a href="{% url 'commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">assignment</span>
+                Gestion des Commandes
+            </a>
+            {% endif %}
+
+            <a href="{% url 'dashboard_commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">local_shipping</span>
+                Suivi Livraisons
+            </a>
+
+            <!-- Bouton Déconnexion -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item"
+                        style="background:none; border:none; width:100%; cursor:pointer; font-size:1rem; font-family:inherit; color: rgba(255,255,255,0.7);">
+                        <span class="material-icons nav-icon">logout</span>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Content Right -->
+    <main class="main-content">
+        <div class="header-section">
+            <div>
+                <h2>🫘 Légumineuses Produites</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Gestion de la liste des cultures de la ferme</p>
+            </div>
+            <a href="{% url 'ajouter_legumineuse' %}" class="btn-add">
+                <span class="material-icons">add_circle</span>
+                Nouvelle Légumineuse
+            </a>
+        </div>
+
+        <div class="table-container">
+            {% if legumineuses %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>🫘 Nom du Légume</th>
+                        <th>📍 Section</th>
+                        <th>💰 Prix Unitaire</th>
+                        <th>⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in legumineuses %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700; color: #333; font-size: 1.1rem;">{{ l.nom }}</div>
+                            {% if l.type_legumineuse %}
+                            <small style="color: #999;">{{ l.type_legumineuse }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if l.section %}
+                            <span class="section-badge">{{ l.section.nom }}</span>
+                            {% else %}
+                            <span style="color: #bbb; font-style: italic;">Non assignée</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="price-tag">{{ l.prix_unitaire|default:"-" }}</span>
+                            <small style="color: #666; font-weight: 600;">FCFA / kg</small>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="{% url 'modifier_legumineuse' l.id %}" class="action-btn btn-edit">
+                                    <span class="material-icons" style="font-size: 18px;">edit</span>
+                                    Modifier
+                                </a>
+                                <a href="{% url 'supprimer_legumineuse' l.id %}" class="action-btn btn-delete">
+                                    <span class="material-icons" style="font-size: 18px;">delete</span>
+                                    Supprimer
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">inventory_2</span>
+                <p style="font-size: 1.2rem;">Aucune légumineuse enregistrée pour le moment.</p>
+                <a href="{% url 'ajouter_legumineuse' %}"
+                    style="color: #2d5016; font-weight: 600; text-decoration: underline;">Ajouter votre première
+                    culture</a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
 </div>
 {% endblock %}
+```

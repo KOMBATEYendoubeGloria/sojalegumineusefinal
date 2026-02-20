@@ -324,8 +324,10 @@
         </div>
 
         <nav class="nav-menu">
-            
-            <!-- Liens exacts du dashboard original -->
+            <a href="/dashboard/" class="nav-item active">
+                <span class="material-icons nav-icon">dashboard</span>
+                Tableau de bord
+            </a>
             <a href="/employes/" class="nav-item">
                 <span class="material-icons nav-icon">groups</span>
                 Gestion employés
@@ -365,10 +367,10 @@
 
             <a href="{% url 'dashboard_commandes' %}" class="nav-item">
                 <span class="material-icons nav-icon">local_shipping</span>
-                Suivi Commandes
+                Suivi Livraisons
             </a>
 
-             <!-- Bouton Déconnexion -->
+            <!-- Bouton Déconnexion -->
             <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
@@ -379,7 +381,7 @@
                     </button>
                 </form>
             </div>
-           
+
         </nav>
     </aside>
 
