@@ -1,22 +1,126 @@
-{% extends 'public/base.html' %}
+﻿{% extends 'public/base.html' %}
 
-{% block content %}
+{% block head_extra %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
-    .details-header {
-        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
-        color: white;
-        padding: 2.5rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 15px rgba(45, 80, 22, 0.2);
+    /* Masquer la navbar par défaut du base.html */
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
     }
 
-    .details-header h2 {
-        margin: 0;
-        font-size: 2rem;
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+        overflow-x: hidden;
+    }
+
+    /* Layout Principal */
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Sidebar (Gauche) */
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        background-color: #3d6b1f;
+        border-radius: 50%;
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: #3d6b1f;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+    /* Main Content (Droite) */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-section h2 {
+        margin: 0;
+        font-size: 1.8rem;
     }
 
     .section-grid {
@@ -108,12 +212,12 @@
         color: white;
     }
 
-    table {
+    .data-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    th {
+    .data-table th {
         text-align: left;
         color: #718096;
         font-size: 0.85rem;
@@ -122,104 +226,213 @@
         background: #f7fafc;
     }
 
-    td {
+    .data-table td {
         padding: 0.8rem;
         border-bottom: 1px solid #edf2f7;
         font-size: 0.95rem;
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .user-profile {
+            flex-direction: row;
+            margin-bottom: 0;
+            text-align: left;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: none;
+        }
+    }
 </style>
+{% endblock %}
 
-<div class="container" style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
-    <a href="{% url 'sections' %}" class="btn-back">
-        <span class="material-icons">arrow_back</span> Retour aux sections
-    </a>
+{% block content %}
+<div class="app-container">
 
-    <div class="details-header">
-        <h2><span class="material-icons">grid_view</span> Section : {{ section.nom }}</h2>
-        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Superficie : <strong>{{ section.superficie }} hectares</strong>
-        </p>
-    </div>
+    <!-- Sidebar Left -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <div>
+                <div class="user-name">{{ user.username|title }}</div>
+                <div class="user-role">{% if user.is_staff %}Administrateur{% else %}Client{% endif %}</div>
+            </div>
+        </div>
 
-    <div class="section-grid">
-        <!-- Carte Employés -->
-        <div class="detail-card">
-            <h3><span class="material-icons">groups</span> Employés associés</h3>
-            {% if employes %}
-            <ul class="info-list">
-                {% for e in employes %}
-                <li class="info-item">
-                    <span class="info-value">{{ e.nom }}</span>
-                    <span class="badge badge-primary">{{ e.telephone }}</span>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucun employé directement affecté à cette
-                section.</p>
+        <nav class="nav-menu">
+            <a href="/dashboard/" class="nav-item">
+                <span class="material-icons nav-icon">dashboard</span>
+                Tableau de bord
+            </a>
+            <a href="/employes/" class="nav-item">
+                <span class="material-icons nav-icon">groups</span>
+                Gestion employés
+            </a>
+            <a href="/sections/" class="nav-item active">
+                <span class="material-icons nav-icon">grid_view</span>
+                Gestion sections
+            </a>
+            <a href="/legumineuses/" class="nav-item">
+                <span class="material-icons nav-icon">grass</span>
+                Gestion légumineuses
+            </a>
+            <a href="/recoltes/" class="nav-item">
+                <span class="material-icons nav-icon">agriculture</span>
+                Suivi récoltes
+            </a>
+            <a href="/stock/" class="nav-item">
+                <span class="material-icons nav-icon">inventory_2</span>
+                Stock
+            </a>
+            <a href="/ventes/" class="nav-item">
+                <span class="material-icons nav-icon">payments</span>
+                Ventes et revenus
+            </a>
+            <a href="/depenses/" class="nav-item">
+                <span class="material-icons nav-icon">account_balance_wallet</span>
+                Achats et dépenses
+            </a>
+
+            {% if user.is_staff %}
+            <div style="margin: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+            <a href="{% url 'commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">assignment</span>
+                Gestion des Commandes
+            </a>
             {% endif %}
 
-            {% if section.employe %}
+            <a href="{% url 'dashboard_commandes' %}" class="nav-item">
+                <span class="material-icons nav-icon">local_shipping</span>
+                Suivi Livraisons
+            </a>
+
+            <!-- Bouton Déconnexion -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item"
+                        style="background:none; border:none; width:100%; cursor:pointer; font-size:1rem; font-family:inherit; color: rgba(255,255,255,0.7);">
+                        <span class="material-icons nav-icon">logout</span>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Content Right -->
+    <main class="main-content">
+        <a href="{% url 'sections' %}" class="btn-back">
+            <span class="material-icons">arrow_back</span> Retour aux sections
+        </a>
+
+        <div class="header-section">
+            <div>
+                <h2>🗺️ Section : {{ section.nom }}</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Détails complets de l'emplacement</p>
+            </div>
             <div
-                style="margin-top: 1.5rem; padding: 1rem; background: #fffaf0; border-radius: 8px; border-left: 4px solid #ed8936;">
-                <p style="margin: 0; font-size: 0.85rem; color: #7b341e; font-weight: 600;">Responsable de section :</p>
-                <p style="margin: 0.3rem 0 0 0; font-weight: 700;">{{ section.employe.nom }}</p>
+                style="font-size: 1.2rem; font-weight: 700; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 8px;">
+                {{ section.superficie }} hectares
             </div>
-            {% endif %}
         </div>
 
-        <!-- Carte Légumineuses -->
-        <div class="detail-card">
-            <h3><span class="material-icons">eco</span> Légumineuses cultivées</h3>
-            {% if legumineuses %}
-            <ul class="info-list">
-                {% for l in legumineuses %}
-                <li class="info-item">
-                    <span class="info-value">{{ l.nom }}</span>
-                    {% if l.prix_unitaire %}
-                    <span class="badge badge-success">{{ l.prix_unitaire }} FCFA/kg</span>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucune légumineuse spécifiquement associée à
-                cette section.</p>
-            {% endif %}
-        </div>
+        <div class="section-grid">
+            <!-- Carte Employés -->
+            <div class="detail-card">
+                <h3><span class="material-icons">groups</span> Employés associés</h3>
+                {% if employes %}
+                <ul class="info-list">
+                    {% for e in employes %}
+                    <li class="info-item">
+                        <span class="info-value">{{ e.nom }}</span>
+                        <span class="badge badge-primary">{{ e.telephone }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucun employé directement affecté à cette
+                    section.</p>
+                {% endif %}
 
-        <!-- Carte Récoltes récentes -->
-        <div class="detail-card" style="grid-column: 1 / -1;">
-            <h3><span class="material-icons">inventory_2</span> Historique des récoltes</h3>
-            {% if recoltes %}
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Légumineuse</th>
-                            <th>Quantité</th>
-                            <th>Date</th>
-                            <th>Qualité</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for r in recoltes %}
-                        <tr>
-                            <td><strong>{{ r.legumineuse.nom }}</strong></td>
-                            <td>{{ r.quantite }} kg</td>
-                            <td>{{ r.date|date:"d M Y" }}</td>
-                            <td><span
-                                    class="badge {% if r.qualite == 'Excellente' %}badge-success{% else %}badge-primary{% endif %}">{{
-                                    r.qualite }}</span></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {% if section.employe %}
+                <div
+                    style="margin-top: 1.5rem; padding: 1rem; background: #fffaf0; border-radius: 8px; border-left: 4px solid #ed8936;">
+                    <p style="margin: 0; font-size: 0.85rem; color: #7b341e; font-weight: 600;">Responsable de section :
+                    </p>
+                    <p style="margin: 0.3rem 0 0 0; font-weight: 700;">{{ section.employe.nom }}</p>
+                </div>
+                {% endif %}
             </div>
-            {% else %}
-            <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucune récolte enregistrée pour cette section.
-            </p>
-            {% endif %}
+
+            <!-- Carte Légumineuses -->
+            <div class="detail-card">
+                <h3><span class="material-icons">eco</span> Légumineuses cultivées</h3>
+                {% if legumineuses %}
+                <ul class="info-list">
+                    {% for l in legumineuses %}
+                    <li class="info-item">
+                        <span class="info-value">{{ l.nom }}</span>
+                        {% if l.prix_unitaire %}
+                        <span class="badge badge-success">{{ l.prix_unitaire }} FCFA/kg</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucune légumineuse spécifiquement associée
+                    à cette section.</p>
+                {% endif %}
+            </div>
+
+            <!-- Carte Récoltes récentes -->
+            <div class="detail-card" style="grid-column: 1 / -1;">
+                <h3><span class="material-icons">inventory_2</span> Historique des récoltes</h3>
+                {% if recoltes %}
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Légumineuse</th>
+                                <th>Quantité</th>
+                                <th>Date</th>
+                                <th>Qualité</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in recoltes %}
+                            <tr>
+                                <td><strong>{{ r.legumineuse.nom }}</strong></td>
+                                <td>{{ r.quantite }} kg</td>
+                                <td>{{ r.date|date:"d M Y" }}</td>
+                                <td><span
+                                        class="badge {% if r.qualite == 'Excellente' %}badge-success{% else %}badge-primary{% endif %}">{{
+                                        r.qualite }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p style="color: #a0aec0; text-align: center; padding: 1rem;">Aucune récolte enregistrée pour cette
+                    section.</p>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    </main>
 </div>
 {% endblock %}

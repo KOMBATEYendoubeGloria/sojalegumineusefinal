@@ -156,6 +156,7 @@ def changer_statut_commande(request, commande_id):
             'code': code, 
             'label': label, 
             'is_current': (code == commande.statut),
+            'checked': 'checked' if code == commande.statut else '',
             'style': statuts_data.get(code, 'background: #eee; color: #333;')
         } 
         for code, label in Commande.STATUT_CHOICES
