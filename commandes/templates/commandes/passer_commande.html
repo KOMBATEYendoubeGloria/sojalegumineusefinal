@@ -136,8 +136,7 @@
             <select name="legumineuse" id="legumineuse" required>
                 <option value="">-- Sélectionnez une légumineuse --</option>
                 {% for l in legumineuses %}
-                <option value="{{ l.id }}" data-price="{{ l.prix_unitaire|default:'' }}">{{ l.nom }} ({{
-                    l.type_legumineuse }})</option>
+                <option value="{{ l.id }}" data-price="{{ l.prix_unitaire|default:'' }}">{{ l.nom }} </option>
                 {% endfor %}
             </select>
         </div>
