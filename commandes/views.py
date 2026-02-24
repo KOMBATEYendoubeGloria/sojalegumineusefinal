@@ -112,15 +112,34 @@ def changer_statut_commande(request, commande_id):
         nouveau_statut = request.POST.get('statut')
         notes = request.POST.get('notes_staff')
         date_livraison = request.POST.get('date_livraison_prevue')
+        date_reelle = request.POST.get('date_livraison_reelle')
         
         if nouveau_statut in dict(Commande.STATUT_CHOICES):
+            # Stock Validation Logic (Backend Fallback)
+            taken_states = ['Confirmée', 'En livraison', 'Livrée']
+            available_states = ['En attente', 'Annulée']
+            
+            if (commande.statut in available_states) and (nouveau_statut in taken_states):
+                from stock.models import Stock
+                stock_entry = Stock.objects.filter(legumineuse=commande.legumineuse).first()
+                if not stock_entry or stock_entry.quantite_disponible < commande.quantite:
+                    from django.contrib import messages
+                    dispo = stock_entry.quantite_disponible if stock_entry else 0
+                    messages.error(request, f"Stock insuffisant pour {commande.legumineuse.nom}. Disponible: {dispo}kg, Demandé: {commande.quantite}kg.")
+                    return redirect('changer_statut_commande', commande_id=commande.id)
+
             commande.statut = nouveau_statut
             if notes:
                 commande.notes_staff = notes
             if date_livraison:
                 commande.date_livraison_prevue = date_livraison
+            
             if nouveau_statut == 'Livrée':
-                commande.date_livraison_reelle = timezone.now().date()
+                if date_reelle:
+                    commande.date_livraison_reelle = date_reelle
+                elif not commande.date_livraison_reelle:
+                    commande.date_livraison_reelle = timezone.now().date()
+                
                 # Créer une vente associée si elle n'existe pas
                 try:
                     from ventes.models import Vente
@@ -143,6 +162,10 @@ def changer_statut_commande(request, commande_id):
             commande.save()
             return redirect('commandes')
     
+    from stock.models import Stock
+    stock_entry = Stock.objects.filter(legumineuse=commande.legumineuse).first()
+    stock_disponible = stock_entry.quantite_disponible if stock_entry else 0
+
     statuts_data = {
         'En attente': 'background: #fff3cd; color: #856404;',
         'Confirmée': 'background: #d1ecf1; color: #0c5460;',
@@ -167,5 +190,7 @@ def changer_statut_commande(request, commande_id):
     return render(request, 'commandes/changer_statut.html', {
         'commande': commande,
         'statuts_list': statuts_list,
-        'client_display_name': client_display_name
+        'client_display_name': client_display_name,
+        'stock_disponible': stock_disponible,
+        'today': timezone.now().date(),
     })

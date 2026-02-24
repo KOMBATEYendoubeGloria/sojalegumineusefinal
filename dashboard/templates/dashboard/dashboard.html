@@ -164,6 +164,10 @@
         border-left-color: #e74c3c;
     }
 
+    .kpi-card.orange-border {
+        border-left-color: #f39c12;
+    }
+
     .kpi-info h3 {
         margin: 0;
         font-size: 2rem;
@@ -207,6 +211,11 @@
     .bg-red {
         background-color: rgba(231, 76, 60, 0.1);
         color: #e74c3c;
+    }
+
+    .bg-orange {
+        background-color: rgba(243, 156, 18, 0.1);
+        color: #f39c12;
     }
 
 
@@ -307,6 +316,64 @@
             /* Simplification pour mobile */
         }
     }
+
+    /* Alerts Section */
+    .alerts-container {
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .alert-item {
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #e74c3c;
+    }
+
+    .alert-item.STOCK {
+        border-left-color: #f39c12;
+    }
+
+    .alert-item.COMMANDE {
+        border-left-color: #e74c3c;
+    }
+
+    .alert-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+    }
+
+    .alert-title {
+        font-weight: 700;
+        margin-right: 0.5rem;
+    }
+
+    .alert-message {
+        color: #2c3e50;
+    }
+
+    .btn-dismiss {
+        color: #95a5a6;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .btn-dismiss:hover {
+        color: #1a3c14;
+    }
 </style>
 {% endblock %}
 
@@ -392,6 +459,9 @@
             <div style="color: #95a5a6;">{{ now|date:"l, d F Y" }}</div>
         </header>
 
+        <!-- Alerts Section -->
+        {% include 'dashboard/_alerts.html' with current_page_type='all' %}
+
         <!-- KPI Cards -->
         <div class="kpi-row">
             <div class="kpi-card green-border">
@@ -414,23 +484,23 @@
                 </div>
             </div>
 
-            <div class="kpi-card red-border">
+            <div class="kpi-card orange-border">
                 <div class="kpi-info">
-                    <h3>{{ depenses_total }}</h3>
-                    <p>Dépenses (FCFA)</p>
+                    <h3>{{ global_stock_alerts_count }}</h3>
+                    <p>Alertes Stock</p>
                 </div>
-                <div class="kpi-icon-box bg-red">
-                    <span class="material-icons">trending_down</span>
+                <div class="kpi-icon-box bg-orange">
+                    <span class="material-icons">inventory_2</span>
                 </div>
             </div>
 
-            <div class="kpi-card yellow-border">
+            <div class="kpi-card red-border">
                 <div class="kpi-info">
-                    <h3>{{ bilan }}</h3>
-                    <p>Bilan Net (FCFA)</p>
+                    <h3>{{ global_commande_alerts_count }}</h3>
+                    <p>Alertes Commandes</p>
                 </div>
-                <div class="kpi-icon-box bg-yellow">
-                    <span class="material-icons">savings</span>
+                <div class="kpi-icon-box bg-red">
+                    <span class="material-icons">warning</span>
                 </div>
             </div>
         </div>

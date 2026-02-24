@@ -334,6 +334,9 @@
 
     <!-- Content Right -->
     <main class="main-content">
+        <!-- Alerts Section -->
+        {% include 'dashboard/_alerts.html' with current_page_type='STOCK' %}
+
         <div class="header-section">
             <div>
                 <h2>📦 Stock Disponible</h2>
@@ -359,7 +362,12 @@
                 <tbody>
                     {% for s in stocks %}
                     <tr>
-                        <td style="font-weight: 600; color: #333;">{{ s.legumineuse.nom }}</td>
+                        <td style="font-weight: 600; color: #333;">
+                            {{ s.legumineuse.nom }}
+                            {% if s.id in alert_stock_ids %}
+                            <span style="color: #f39c12; margin-left: 5px;" title="Stock Bas">●</span>
+                            {% endif %}
+                        </td>
                         <td><span class="quantity-badge">{{ s.quantite_disponible }}</span> <small
                                 style="color: #666; font-weight: 600;">kg</small></td>
                         <td style="color: #666;">{{ s.date_mise_a_jour|date:"d/m/Y H:i" }}</td>

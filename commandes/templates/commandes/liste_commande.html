@@ -365,6 +365,9 @@
 
     <!-- Content Right -->
     <main class="main-content">
+        <!-- Alerts Section -->
+        {% include 'dashboard/_alerts.html' with current_page_type='COMMANDE' %}
+
         <div class="header-section">
             <div>
                 <h2>🚚 Gestion des Commandes</h2>
@@ -407,7 +410,12 @@
                             <br>
                             <small style="color: #888;">{{ c.client_telephone|default:'' }}</small>
                         </td>
-                        <td style="font-weight: 600;">{{ c.legumineuse.nom }}</td>
+                        <td style="font-weight: 600;">
+                            {{ c.legumineuse.nom }}
+                            {% if c.id in alert_commande_ids %}
+                            <span style="color: #e74c3c; margin-left: 5px;" title="Retard de livraison">●</span>
+                            {% endif %}
+                        </td>
                         <td><strong>{{ c.quantite }} kg</strong></td>
                         <td>
                             {% if c.prix_total %}

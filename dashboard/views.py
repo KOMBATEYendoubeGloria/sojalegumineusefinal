@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from production.models import Legumineuse, Recolte
 from ventes.models import Vente
@@ -7,6 +7,8 @@ from stock.models import Stock
 from commandes.models import Commande
 from django.contrib.auth.models import User
 import json
+from .models import Notification
+from .utils import check_and_create_alerts
 
 def get_legume_colors(labels):
     """Génère une palette de couleurs cohérente pour une liste de labels."""
@@ -35,6 +37,12 @@ def dashboard(request):
     depenses_total = sum([d.montant for d in Depense.objects.all()]) or 0
     bilan = revenu_total - depenses_total
     
+    # Vérifier et créer des alertes
+    check_and_create_alerts()
+    
+    # Récupérer les notifications non lues
+    notifications = Notification.objects.filter(est_lu=False)
+
     # Commandes en attente
     commandes_attente = Commande.objects.filter(statut='En attente').count()
 
@@ -81,6 +89,9 @@ def dashboard(request):
         'stock_data': json.dumps(stock_data),
         'background_colors': json.dumps(background_colors),
         'dernieres_commandes': dernieres_commandes,
+        'notifications': notifications,  # Unread only
+        'stock_alerts_count': Notification.objects.filter(type='STOCK').count(),
+        'commande_alerts_count': Notification.objects.filter(type='COMMANDE').count(),
     }
 
     return render(request, 'dashboard/dashboard.html', context)
@@ -165,4 +176,15 @@ def commandes_livraisons(request):
         commandes = u.commandes.all().order_by('-date_commande')
         data.append({'client': u, 'commandes': commandes})
 
+
     return render(request, 'dashboard/commandes_livraisons.html', {'clients_commandes': data})
+
+@login_required
+def marquer_notification_lue(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    notification.est_lu = True
+    notification.save()
+    
+    # Redirection vers la page précédente si spécifiée, sinon dashboard
+    next_url = request.GET.get('next', 'dashboard')
+    return redirect(next_url)

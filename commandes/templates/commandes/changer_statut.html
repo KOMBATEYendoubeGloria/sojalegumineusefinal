@@ -468,6 +468,15 @@
                         value="{% if commande.date_livraison_prevue %}{{ commande.date_livraison_prevue|date:'Y-m-d' }}{% endif %}">
                 </div>
 
+                <div class="form-group" id="reelle_date_group" style="display: none;">
+                    <label for="date_livraison_reelle">🚚 Date de livraison réelle</label>
+                    <input type="date" name="date_livraison_reelle" id="date_livraison_reelle"
+                        value="{% if commande.date_livraison_reelle %}{{ commande.date_livraison_reelle|date:'Y-m-d' }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}">
+                    <small style="color: #999; display: block; margin-top: 0.3rem;">
+                        Saisissez la date effective de la livraison.
+                    </small>
+                </div>
+
                 <div class="form-group">
                     <label for="notes_staff">📝 Notes pour le staff</label>
                     <textarea name="notes_staff" id="notes_staff"
@@ -500,4 +509,101 @@
         </div>
     </main>
 </div>
+
+<!-- Custom Modern Alert (Toast style) -->
+<div id="modernAlert"
+    style="display:none; position: fixed; top: 30px; right: 30px; z-index: 10000; width: 400px; padding: 20px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 6px solid #e53e3e; transform: translateX(120%); transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);">
+    <div style="display: flex; align-items: flex-start; gap: 15px;">
+        <div
+            style="background: #e53e3e; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <span class="material-icons" style="color: white; font-size: 1.8rem;">priority_high</span>
+        </div>
+        <div style="flex: 1;">
+            <h4 style="margin: 0 0 5px 0; color: #1a202c; font-size: 1.1rem; font-weight: 700;">Stock Insuffisant</h4>
+            <p style="margin: 0; color: #4a5568; font-size: 0.95rem; line-height: 1.4;" id="alertMessage"></p>
+        </div>
+        <button onclick="hideAlert()"
+            style="background: none; border: none; cursor: pointer; color: #a0aec0; padding: 0;">
+            <span class="material-icons">close</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    // Safeguard numeric values to avoid JS errors
+    const availableStock = parseFloat("{{ stock_disponible|default:"0" }}".replace(',', '.'));
+    const orderQuantity = parseFloat("{{ commande.quantite|default:"0" }}".replace(',', '.'));
+    const legumeNom = "{{ commande.legumineuse.nom }}";
+    const currentStatut = "{{ commande.statut }}";
+
+    function showAlert(message) {
+        const alert = document.getElementById('modernAlert');
+        document.getElementById('alertMessage').innerHTML = message;
+        alert.style.display = 'block';
+        requestAnimationFrame(() => {
+            alert.style.transform = 'translateX(0)';
+        });
+    }
+
+    function hideAlert() {
+        const alert = document.getElementById('modernAlert');
+        alert.style.transform = 'translateX(120%)';
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 500);
+    }
+
+    function toggleReelleDate(selectedStatut) {
+        const group = document.getElementById('reelle_date_group');
+        if (selectedStatut === 'Livrée') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    }
+
+    // Validation logic
+    function validateStock(selectedStatut) {
+        const takenStates = ['Confirmée', 'En livraison', 'Livrée'];
+        const availableStates = ['En attente', 'Annulée'];
+
+        if (availableStates.includes(currentStatut) && takenStates.includes(selectedStatut)) {
+            if (availableStock < orderQuantity) {
+                const diff = (orderQuantity - availableStock).toFixed(2);
+                showAlert(`Attention ! Il ne reste que <b>${availableStock}</b>kg de ${legumeNom} en stock, mais cette commande demande <b>${orderQuantity}</b>kg.<br><small>(Manque: ${diff}kg)</small>`);
+                return false;
+            }
+        }
+        hideAlert();
+        return true;
+    }
+
+    // Listen to changes on radio buttons
+    document.querySelectorAll('input[name="statut"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            validateStock(this.value);
+            toggleReelleDate(this.value);
+        });
+        // Initial state
+        if (radio.checked) {
+            toggleReelleDate(radio.value);
+        }
+    });
+
+    // Final check on submit
+    document.querySelector('form').onsubmit = function (e) {
+        const radioChecked = document.querySelector('input[name="statut"]:checked');
+        if (!radioChecked) return true;
+
+        if (!validateStock(radioChecked.value)) {
+            e.preventDefault();
+            // Pulse the alert to grab attention
+            const alert = document.getElementById('modernAlert');
+            alert.style.transform = 'scale(1.05)';
+            setTimeout(() => { alert.style.transform = 'scale(1)'; }, 150);
+            return false;
+        }
+        return true;
+    };
+</script>
 {% endblock %}

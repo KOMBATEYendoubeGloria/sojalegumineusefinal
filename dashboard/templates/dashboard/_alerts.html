@@ -1,0 +1,25 @@
+{% if global_notifications %}
+<div class="alerts-container" style="margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.8rem;">
+    {% for note in global_notifications %}
+    {% if current_page_type == 'all' or note.type == current_page_type %}
+    <div class="alert-item {{ note.type }}"
+        style="background: white; padding: 1rem 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid {% if note.type == 'STOCK' %}#f39c12{% else %}#e74c3c{% endif %};">
+        <a href="{{ note.target_url }}" class="alert-content"
+            style="text-decoration: none; color: inherit; flex: 1; display: flex; align-items: center; gap: 1rem;">
+            <span class="material-icons alert-icon"
+                style="color: {% if note.type == 'STOCK' %}#f39c12{% else %}#e74c3c{% endif %}; font-size: 1.5rem;">
+                {% if note.type == 'STOCK' %}inventory_2{% else %}warning{% endif %}
+            </span>
+            <div>
+                <span class="alert-title" style="font-weight: 700; margin-right: 0.5rem;">{{ note.titre }} :</span>
+                <span class="alert-message" style="color: #2c3e50;">{{ note.message }}</span>
+                <span style="font-size: 0.75rem; color: #95a5a6; margin-left: 0.5rem;">(Cliquer pour gérer)</span>
+            </div>
+        </a>
+        <a href="{% url 'marquer_notification_lue' note.id %}?next={{ request.path }}" class="btn-dismiss"
+            style="color: #95a5a6; text-decoration: none; font-size: 0.8rem; font-weight: 600;">Marquer comme lu</a>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}

@@ -43,33 +43,44 @@ class Commande(models.Model):
         # Import inside method to avoid potential circular imports
         from stock.models import Stock
         
-        # Check if it's an existing instance to compare status
+        # Check if it's an existing instance to compare status and quantity
         if self.pk:
-            old_instance = Commande.objects.get(pk=self.pk)
-            old_statut = old_instance.statut
+            try:
+                old_instance = Commande.objects.get(pk=self.pk)
+                old_statut = old_instance.statut
+                old_quantite = old_instance.quantite
+            except Commande.DoesNotExist:
+                old_statut = 'En attente'
+                old_quantite = 0
         else:
-            old_statut = 'En attente' # Default for new
+            old_statut = 'En attente'
+            old_quantite = 0
 
         new_statut = self.statut
+        new_quantite = self.quantite
 
-        # Define states where stock should be deducted
-        deducted_states = ['Confirmée', 'En livraison', 'Livrée']
-        # Define states where stock should be present (not deducted)
-        raw_states = ['En attente', 'Annulée']
-
-        # Determine direction
-        should_deduct = (new_statut in deducted_states) and (old_statut in raw_states)
-        should_restore = (new_statut in raw_states) and (old_statut in deducted_states)
+        # States where stock is considered "taken" from inventory
+        taken_states = ['Confirmée', 'En livraison', 'Livrée']
+        # States where stock is considered "available" in inventory
+        available_states = ['En attente', 'Annulée']
 
         stock_entry = Stock.objects.filter(legumineuse=self.legumineuse).first()
 
         if stock_entry:
-            if should_deduct:
-                stock_entry.quantite_disponible -= self.quantite
+            # Moving from AVAILABLE to TAKEN -> Deduct the new quantity
+            if (old_statut in available_states) and (new_statut in taken_states):
+                stock_entry.quantite_disponible -= new_quantite
                 stock_entry.save()
-            elif should_restore:
-                stock_entry.quantite_disponible += self.quantite
+            
+            # Moving from TAKEN to AVAILABLE -> Restore the old quantity
+            elif (old_statut in taken_states) and (new_statut in available_states):
+                stock_entry.quantite_disponible += old_quantite
+                stock_entry.save()
+            
+            # Staying within TAKEN states but changing QUANTITY -> Adjust the difference
+            elif (old_statut in taken_states) and (new_statut in taken_states) and (old_quantite != new_quantite):
+                diff = new_quantite - old_quantite
+                stock_entry.quantite_disponible -= diff
                 stock_entry.save()
         
         super().save(*args, **kwargs)
-
