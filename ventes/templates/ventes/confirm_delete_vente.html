@@ -1,0 +1,141 @@
+{% extends 'public/base.html' %}
+
+{% block head_extra %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    nav.main-nav,
+    .site-hr {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: #f0f2f5;
+    }
+
+    .app-container {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .sidebar {
+        width: 260px;
+        background-color: #1a3c14;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .delete-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .delete-icon {
+        font-size: 5rem;
+        color: #e74c3c;
+        margin-bottom: 1.5rem;
+    }
+
+    h2 {
+        color: #1a3c14;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        font-size: 1rem;
+    }
+
+    .btn-cancel {
+        background: #f0f2f5;
+        color: #666;
+    }
+
+    .btn-cancel:hover {
+        background: #e4e6e9;
+    }
+
+    .btn-delete {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <!-- Sidebar content similar to other pages if needed, but keeping it minimal for confirmation -->
+        <div class="user-profile" style="text-align: center; margin-bottom: 3rem;">
+            <div class="avatar"
+                style="width: 70px; height: 70px; background-color: #3d6b1f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; margin: 0 auto 0.8rem; border: 3px solid rgba(255, 255, 255, 0.1);">
+                {{ user.username|first|upper }}</div>
+            <div class="user-name" style="font-weight: 600;">{{ user.username|title }}</div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="delete-card">
+            <span class="material-icons delete-icon">warning</span>
+            <h2>Confirmer la suppression</h2>
+            <p>Êtes-vous sûr de vouloir supprimer la vente de <strong>{{ vente.quantite }} kg de {{
+                    vente.legumineuse.nom }}</strong> à <strong>{{ vente.client }}</strong> ?<br> Cette action est
+                irréversible.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="btn-group">
+                    <a href="{% url 'ventes' %}" class="btn btn-cancel">Annuler</a>
+                    <button type="submit" class="btn btn-delete">Supprimer définitivement</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

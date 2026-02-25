@@ -67,20 +67,44 @@ class Commande(models.Model):
         stock_entry = Stock.objects.filter(legumineuse=self.legumineuse).first()
 
         if stock_entry:
+            # Import MouvementStock here to avoid circular imports
+            from stock.models import MouvementStock
+            
             # Moving from AVAILABLE to TAKEN -> Deduct the new quantity
             if (old_statut in available_states) and (new_statut in taken_states):
                 stock_entry.quantite_disponible -= new_quantite
                 stock_entry.save()
+                
+                MouvementStock.objects.create(
+                    legumineuse=self.legumineuse,
+                    type_mouvement='SORTIE',
+                    quantite=new_quantite,
+                    motif=f"Commande confirmée - {self.client.username}"
+                )
             
             # Moving from TAKEN to AVAILABLE -> Restore the old quantity
             elif (old_statut in taken_states) and (new_statut in available_states):
                 stock_entry.quantite_disponible += old_quantite
                 stock_entry.save()
+                
+                MouvementStock.objects.create(
+                    legumineuse=self.legumineuse,
+                    type_mouvement='ENTREE',
+                    quantite=old_quantite,
+                    motif=f"Commande annulée/remise en attente - {self.client.username}"
+                )
             
             # Staying within TAKEN states but changing QUANTITY -> Adjust the difference
             elif (old_statut in taken_states) and (new_statut in taken_states) and (old_quantite != new_quantite):
                 diff = new_quantite - old_quantite
                 stock_entry.quantite_disponible -= diff
                 stock_entry.save()
+                
+                MouvementStock.objects.create(
+                    legumineuse=self.legumineuse,
+                    type_mouvement='SORTIE' if diff > 0 else 'ENTREE',
+                    quantite=abs(diff),
+                    motif=f"Mise à jour quantité commande - {self.client.username}"
+                )
         
         super().save(*args, **kwargs)

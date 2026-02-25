@@ -1,4 +1,4 @@
-﻿{% extends 'public/base.html' %}
+{% extends 'public/base.html' %}
 
 {% block head_extra %}
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -123,73 +123,6 @@
         font-size: 1.8rem;
     }
 
-    .btn-add {
-        background: white;
-        color: #2d5016;
-        padding: 0.7rem 1.5rem;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .table-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-    }
-
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .data-table thead tr {
-        background: #f8f9fa;
-        border-bottom: 2px solid #eee;
-    }
-
-    .data-table th {
-        padding: 1.2rem;
-        text-align: left;
-        color: #2d5016;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-    }
-
-    .data-table td {
-        padding: 1.2rem;
-        border-bottom: 1px solid #f0f0f0;
-        vertical-align: middle;
-    }
-
-    .data-table tbody tr:hover {
-        background: #f9fbf7;
-    }
-
-    .price-tag {
-        color: #27ae60;
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 4rem;
-        color: #999;
-    }
-
     .filter-section {
         background: white;
         padding: 1.5rem;
@@ -246,23 +179,93 @@
         margin-bottom: 0.6rem;
     }
 
-    .btn-delete {
+    .btn-add {
+        background: white;
+        color: #2d5016;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead tr {
+        background: #f8f9fa;
+        border-bottom: 2px solid #eee;
+    }
+
+    .data-table th {
+        padding: 1.2rem;
+        text-align: left;
+        color: #2d5016;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+        padding: 1.2rem;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+
+    .data-table tbody tr:hover {
+        background: #f9fbf7;
+    }
+
+    .badge-entree {
+        background: #e9f5e9;
+        color: #2d5016;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .badge-sortie {
+        background: #fdf2f0;
         color: #e74c3c;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
         text-decoration: none;
         display: flex;
         align-items: center;
-        gap: 0.3rem;
-        font-weight: 600;
-        font-size: 0.85rem;
-        padding: 0.4rem 0.8rem;
-        border-radius: 6px;
-        background: #fdf2f0;
-        transition: all 0.2s;
+        gap: 0.5rem;
+        transition: background 0.3s;
     }
 
-    .btn-delete:hover {
-        background: #e74c3c;
-        color: white;
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
     }
 
     /* Responsive */
@@ -327,11 +330,11 @@
                 <span class="material-icons nav-icon">agriculture</span>
                 Suivi récoltes
             </a>
-            <a href="/stock/" class="nav-item">
+            <a href="/stock/" class="nav-item active">
                 <span class="material-icons nav-icon">inventory_2</span>
                 Stock
             </a>
-            <a href="/ventes/" class="nav-item active">
+            <a href="/ventes/" class="nav-item">
                 <span class="material-icons nav-icon">payments</span>
                 Ventes et revenus
             </a>
@@ -369,11 +372,18 @@
 
     <!-- Content Right -->
     <main class="main-content">
+        <!-- Alerts Section -->
+        {% include 'dashboard/_alerts.html' with current_page_type='STOCK' %}
+
         <div class="header-section">
             <div>
-                <h2>💰 Historique des Ventes</h2>
-                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Suivi des transactions et revenus</p>
+                <h2>📜 Historique des Mouvements</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Suivi des entrées et sorties de stock</p>
             </div>
+            <a href="{% url 'stock' %}" class="btn-back">
+                <span class="material-icons">arrow_back</span>
+                Retour au stock
+            </a>
         </div>
 
         <!-- Section de filtrage -->
@@ -391,50 +401,48 @@
                 <span class="material-icons">filter_list</span>
                 Filtrer
             </button>
-            <a href="{% url 'ventes' %}" class="btn-reset">Réinitialiser</a>
+            <a href="{% url 'liste_mouvements' %}" class="btn-reset">Réinitialiser</a>
         </form>
 
         <div class="table-container">
-            {% if ventes %}
+            {% if mouvements %}
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Légumineuse</th>
-                        <th>Quantité (kg)</th>
-                        <th>Prix unitaire</th>
-                        <th>Client</th>
-                        <th>Date</th>
-                        <th>Revenu</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>📅 Date</th>
+                        <th>🫘 Légumineuse</th>
+                        <th>Type</th>
+                        <th>📊 Quantité</th>
+                        <th>📝 Motif</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for v in ventes %}
+                    {% for m in mouvements %}
                     <tr>
-                        <td style="font-weight: 700; color: #333;">{{ v.legumineuse.nom }}</td>
-                        <td style="text-align: center;">{{ v.quantite }}</td>
-                        <td><span class="price-tag">{{ v.prix_unitaire|floatformat:0 }}</span> <small>FCFA</small></td>
+                        <td style="color: #666;">{{ m.date|date:"d/m/Y H:i" }}</td>
+                        <td style="font-weight: 600; color: #333;">{{ m.legumineuse.nom }}</td>
                         <td>
-                            <div style="font-weight: 600;">{{ v.client }}</div>
-                            <div style="font-size: 0.8rem; color: #888;">{{ v.client_telephone|default:'' }}</div>
+                            {% if m.type_mouvement == 'ENTREE' %}
+                            <span class="badge-entree">ENTRÉE</span>
+                            {% else %}
+                            <span class="badge-sortie">SORTIE</span>
+                            {% endif %}
                         </td>
-                        <td style="color: #666;">{{ v.date|date:"d/m/Y" }}</td>
-                        <td style="font-weight: 700; color: #27ae60;">{{ v.revenu|floatformat:0 }} <small>FCFA</small>
+                        <td>
+                            <span
+                                style="font-weight: 700; color: {% if m.type_mouvement == 'ENTREE' %}#2d5016{% else %}#e74c3c{% endif %};">
+                                {% if m.type_mouvement == 'ENTREE' %}+{% else %}-{% endif %}{{ m.quantite }} kg
+                            </span>
                         </td>
-                        <td style="text-align: right;">
-                            <a href="{% url 'supprimer_vente' v.pk %}" class="btn-delete" style="display: inline-flex;">
-                                <span class="material-icons" style="font-size: 1.1rem;">delete</span>
-                                Supprimer
-                            </a>
-                        </td>
+                        <td style="color: #555; font-style: italic;">{{ m.motif }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% else %}
-            <div class="empty-state">
-                <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">receipt</span>
-                <p style="font-size: 1.2rem;">Aucune vente enregistrée pour le moment.</p>
+            <div class="empty-state" style="text-align: center; padding: 4rem; color: #999;">
+                <span class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">history</span>
+                <p style="font-size: 1.2rem;">Aucun mouvement enregistré pour le moment.</p>
             </div>
             {% endif %}
         </div>

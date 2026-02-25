@@ -342,10 +342,17 @@
                 <h2>📦 Stock Disponible</h2>
                 <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">État des réserves de la ferme</p>
             </div>
-            <a href="{% url 'ajouter_stock' %}" class="btn-add">
-                <span class="material-icons">add_box</span>
-                Mettre à jour le stock
-            </a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'liste_mouvements' %}" class="btn-add"
+                    style="background: rgba(255,255,255,0.2); color: white;">
+                    <span class="material-icons">history</span>
+                    Historique des mouvements
+                </a>
+                <a href="{% url 'ajouter_stock' %}" class="btn-add">
+                    <span class="material-icons">add_box</span>
+                    Mettre à jour le stock
+                </a>
+            </div>
         </div>
 
         <div class="table-container">
